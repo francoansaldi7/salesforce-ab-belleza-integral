@@ -1,0 +1,625 @@
+/* ── Variables ─────────────────────────────────────────────────────────── */
+:host {
+    --salon-pink:       #0d9668;
+    --salon-pink-dark:  #0a7a52;
+    --salon-pink-light: #e6f9f2;
+    --salon-gold:       #c9a84c;
+    --salon-dark:       #1a1a2e;
+    --salon-gray:       #6b7280;
+    --salon-bg:         #f0faf6;
+    --radius:           12px;
+    --shadow:           0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ── Contenedor raíz ───────────────────────────────────────────────────── */
+.salon-home {
+    background: var(--salon-bg);
+    padding: 1.25rem;
+    min-height: 100vh;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+/* ── Encabezado ────────────────────────────────────────────────────────── */
+.salon-header {
+    background: linear-gradient(135deg, var(--salon-dark) 0%, #3a1a4e 100%);
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.25rem;
+    color: white;
+}
+
+.salon-header__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #f5deb3;
+}
+
+.salon-header__subtitle {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.7);
+    margin-top: 0.25rem;
+    text-transform: capitalize;
+}
+
+/* ── KPI Grid ──────────────────────────────────────────────────────────── */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.kpi-tile {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid transparent;
+    text-align: center;
+}
+
+.kpi-tile__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--salon-gray);
+    margin-bottom: 0.5rem;
+}
+
+.kpi-tile__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-income      { border-left-color: #0d9668; }
+.kpi-appointments{ border-left-color: var(--salon-pink); }
+.kpi-stock       { border-left-color: var(--salon-pink); }
+.kpi-dormant     { border-left-color: var(--salon-pink); }
+
+.kpi-income .kpi-tile__value      { color: #0d9668; font-size: 1.4rem; }
+.kpi-appointments .kpi-tile__value{ color: var(--salon-pink); }
+.kpi-stock .kpi-tile__value       { color: var(--salon-pink); }
+.kpi-dormant .kpi-tile__value     { color: var(--salon-pink); }
+
+/* ── Acciones Rápidas ──────────────────────────────────────────────────── */
+.quick-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+/* Desktop: fixed width so buttons size to their text, not the full container */
+.action-btn {
+    width:           10rem;
+    justify-content: center;
+}
+
+/* Mobile: full width forces each button onto its own line */
+@media (max-width: 768px) {
+    .action-btn {
+        width: 100% !important;
+    }
+}
+
+/* ── Overlay del Flujo ─────────────────────────────────────────────────── */
+.flow-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.flow-container {
+    background: white;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.flow-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: var(--salon-pink-light);
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.flow-header__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+}
+
+/* ── Contenido Principal ───────────────────────────────────────────────── */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+/* ── Panel ─────────────────────────────────────────────────────────────── */
+.content-panel {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    /* overflow must stay visible so lightning-button-menu dropdowns are not clipped */
+    overflow: visible;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--salon-pink-light);
+    border-bottom: 1px solid #a7f3d0;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.panel-header__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+    flex: 1;
+}
+
+.panel-header__count {
+    background: var(--salon-pink);
+    color: white;
+    border-radius: 9999px;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* ── Lista de Citas ────────────────────────────────────────────────────── */
+.appointment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.appointment-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.15s;
+}
+
+.appointment-item:hover {
+    background: #e6f9f2;
+    cursor: pointer;
+}
+
+.appt-time {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--salon-pink);
+    min-width: 3.5rem;
+    padding-top: 2px;
+}
+
+.appt-info {
+    flex: 1;
+}
+
+.appt-client {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--salon-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.appt-services {
+    font-size: 0.8rem;
+    color: var(--salon-gray);
+    margin-top: 0.15rem;
+}
+
+.appt-amount {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0d9668;
+    margin-top: 0.15rem;
+}
+
+.appt-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+}
+
+/* ── Badges ────────────────────────────────────────────────────────────── */
+.badge {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.badge-vip {
+    background: var(--salon-gold);
+    color: white;
+}
+
+.badge-allergy {
+    background: #ef4444;
+    color: white;
+    cursor: help;
+}
+
+/* ── Badge de Estado de Cita ───────────────────────────────────────────── */
+.status-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 0.2rem 0.6rem;
+    white-space: nowrap;
+}
+
+.status-scheduled  { background: #eff6ff; color: #2563eb; }
+.status-confirmed  { background: #f0fdf4; color: #16a34a; }
+.status-inprogress { background: #fffbeb; color: #d97706; }
+.status-completed  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.status-noshow     { background: #fef2f2; color: #dc2626; }
+.status-cancelled  { background: #f9fafb; color: #6b7280; }
+
+/* ── KPI balance negativo ──────────────────────────────────────────────── */
+.balance-negative {
+    color: #dc2626;
+}
+
+/* ── KPI tile clickable ────────────────────────────────────────────────── */
+.kpi-tile--clickable {
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.kpi-tile--clickable:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.13);
+    transform: translateY(-2px);
+}
+
+.kpi-tile__hint {
+    font-size: 0.65rem;
+    color: var(--salon-gray);
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    opacity: 0.8;
+}
+
+/* ── Modales KPI ───────────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-container {
+    background: white;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 520px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.modal-container--edit {
+    max-width: 720px;
+}
+
+@media (min-width: 769px) {
+    .modal-container--edit {
+        max-width: 1000px;
+        width: 90vw;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: var(--salon-pink-light);
+    border-radius: var(--radius) var(--radius) 0 0;
+    flex-shrink: 0;
+}
+
+.modal-header-icon--stock  { --lwc-colorTextIconDefault: var(--salon-pink); }
+.modal-header-icon--dormant{ --lwc-colorTextIconDefault: var(--salon-pink); }
+
+.modal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+    flex: 1;
+}
+
+.modal-body {
+    overflow-y: auto;
+    padding: 1.25rem;
+}
+
+.modal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.modal-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.12s;
+}
+
+.modal-list-item:last-child { border-bottom: none; }
+.modal-list-item:hover      { background: #e6f9f2; }
+
+.modal-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.modal-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--salon-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-item-category {
+    font-size: 0.75rem;
+    color: var(--salon-gray);
+}
+
+.modal-item-stock {
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+    flex-shrink: 0;
+}
+
+.stock-actual { font-size: 1.3rem; font-weight: 700; color: var(--salon-pink); }
+.stock-sep    { font-size: 0.85rem; color: #d1d5db; }
+.stock-min    { font-size: 0.75rem; color: var(--salon-gray); }
+
+.modal-item-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    flex-shrink: 0;
+}
+
+.date-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--salon-gray);
+}
+
+.date-value {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--salon-pink);
+}
+
+.modal-empty {
+    padding: 2rem 1.25rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--salon-gray);
+}
+
+/* ── Toggle Hoy / Próximas ─────────────────────────────────────────────── */
+.view-toggle {
+    display: flex;
+    gap: 2px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 6px;
+    padding: 2px;
+    margin-right: 0.5rem;
+}
+
+.view-btn {
+    border: none;
+    background: transparent;
+    padding: 0.18rem 0.65rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--salon-gray);
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.view-btn--active {
+    background: var(--salon-pink);
+    color: white;
+}
+
+/* ── Estado vacío ──────────────────────────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--salon-gray);
+}
+
+.empty-state p {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* ── Modal: Balance Historial ──────────────────────────────────────────── */
+.modal-container--balance {
+    max-width: 600px;
+}
+
+.modal-header-icon--balance { --lwc-colorTextIconDefault: #0d9668; }
+
+.balance-picker {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.balance-picker__field {
+    flex: 1;
+}
+
+/* Three summary cards in a row */
+.balance-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.balance-card {
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.balance-card--income  { background: #f0fdf4; border-color: #bbf7d0; }
+.balance-card--expense { background: #fef2f2; border-color: #fecaca; }
+.balance-card--net     { background: var(--salon-pink-light); border-color: #a7f3d0; }
+
+.balance-card__label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--salon-gray);
+    margin-bottom: 0.35rem;
+}
+
+.balance-card__value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+}
+
+.balance-card--income  .balance-card__value { color: #16a34a; }
+.balance-card--expense .balance-card__value { color: #dc2626; }
+.balance-card--net     .balance-card__value { color: #0d9668; }
+
+.balance-card__value--negative { color: #dc2626 !important; }
+
+/* Transaction rows */
+.tx-date {
+    font-size: 0.75rem;
+    color: var(--salon-gray);
+    white-space: nowrap;
+    min-width: 5.5rem;
+    flex-shrink: 0;
+}
+
+.tx-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    flex-shrink: 0;
+}
+
+.tx-type-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+}
+
+.tx-type-badge--income  { background: #dcfce7; color: #15803d; }
+.tx-type-badge--expense { background: #fee2e2; color: #b91c1c; }
+
+.tx-amount {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+}
+
+/* ── Edit form footer ──────────────────────────────────────────────────── */
+.edit-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 0.5rem;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .salon-header__title {
+        font-size: 1.3rem;
+    }
+}

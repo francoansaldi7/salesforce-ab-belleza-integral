@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Gastos</fullName>
+    <columns>NAME</columns>
+    <columns>Category__c</columns>
+    <columns>Transaction_Date__c</columns>
+    <columns>Payment_Method__c</columns>
+    <columns>Amount__c</columns>
+    <columns>Description__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Transaction_Type__c</field>
+        <operation>equals</operation>
+        <value>Gasto</value>
+    </filters>
+    <label>Gastos</label>
+</ListView>

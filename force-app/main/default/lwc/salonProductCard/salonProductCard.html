@@ -1,0 +1,50 @@
+<!--
+  @description  Tarjeta de imagen para Salon_Product__c.
+                Muestra la imagen del producto y permite subir o reemplazar
+                la foto directamente desde la página del registro.
+-->
+<template>
+    <div class="product-image-card">
+
+        <div class="card-header">
+            <lightning-icon icon-name="utility:image" size="x-small" class="header-icon"></lightning-icon>
+            <span class="card-title">Imagen del Producto</span>
+        </div>
+
+        <!-- Image display area: three states — loading, image found, no image yet -->
+        <div class="image-area">
+            <!-- Loading spinner while the Apex call fetches the ContentVersionId -->
+            <template lwc:if={isLoading}>
+                <div class="placeholder">
+                    <lightning-spinner size="medium" alternative-text="Cargando imagen..."></lightning-spinner>
+                </div>
+            </template>
+            <!-- Image found: render the file using the Salesforce content download servlet URL -->
+            <template lwc:elseif={imageUrl}>
+                <img class="product-img" src={imageUrl} alt="Imagen del producto" />
+            </template>
+            <!-- No image attached yet: show a placeholder icon -->
+            <template lwc:else>
+                <div class="placeholder">
+                    <lightning-icon icon-name="utility:image" size="large" class="placeholder-icon"></lightning-icon>
+                    <p class="placeholder-text">Sin imagen</p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Upload area: lightning-file-upload handles the Salesforce Files upload automatically.
+             record-id links the uploaded file to this product record. multiple="false" enforces one at a time. -->
+        <div class="upload-area">
+            <lightning-file-upload
+                label="Subir imagen"
+                name="productImage"
+                accept={acceptedFormats}
+                record-id={recordId}
+                onuploadfinished={handleUploadFinished}
+                multiple="false">
+            </lightning-file-upload>
+            <p class="upload-hint">JPG, PNG, GIF, WEBP o BMP. La imagen anterior se mantiene en los archivos del registro.</p>
+        </div>
+
+    </div>
+</template>

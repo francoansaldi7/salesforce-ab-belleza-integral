@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Preferred_Services__c</fullName>
+    <label>Servicios Preferidos</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Corte de Cabello</fullName>
+                <default>false</default>
+                <label>Corte de Cabello</label>
+            </value>
+            <value>
+                <fullName>Coloración</fullName>
+                <default>false</default>
+                <label>Coloración</label>
+            </value>
+            <value>
+                <fullName>Mechas / Balayage</fullName>
+                <default>false</default>
+                <label>Mechas / Balayage</label>
+            </value>
+            <value>
+                <fullName>Tratamiento Capilar</fullName>
+                <default>false</default>
+                <label>Tratamiento Capilar</label>
+            </value>
+            <value>
+                <fullName>Peinado</fullName>
+                <default>false</default>
+                <label>Peinado</label>
+            </value>
+            <value>
+                <fullName>Manicure</fullName>
+                <default>false</default>
+                <label>Manicure</label>
+            </value>
+            <value>
+                <fullName>Pedicure</fullName>
+                <default>false</default>
+                <label>Pedicure</label>
+            </value>
+            <value>
+                <fullName>Manicure Gel</fullName>
+                <default>false</default>
+                <label>Manicure Gel</label>
+            </value>
+            <value>
+                <fullName>Uñas Acrílicas</fullName>
+                <default>false</default>
+                <label>Uñas Acrílicas</label>
+            </value>
+            <value>
+                <fullName>Depilación</fullName>
+                <default>false</default>
+                <label>Depilación</label>
+            </value>
+            <value>
+                <fullName>Faciales</fullName>
+                <default>false</default>
+                <label>Faciales</label>
+            </value>
+            <value>
+                <fullName>Maquillaje</fullName>
+                <default>false</default>
+                <label>Maquillaje</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

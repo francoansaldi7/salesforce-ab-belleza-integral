@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Decide qué hacer según cómo cambió el estado de la cita.</description>
+        <name>Que_Cambio</name>
+        <label>¿Qué cambió?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Nada que hacer</defaultConnectorLabel>
+        <rules>
+            <name>Se_Completo</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completada</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Status__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Completada</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Buscar_Ingreso_Existente</targetReference>
+            </connector>
+            <label>Se completó</label>
+        </rules>
+        <rules>
+            <name>Dejo_De_Estar_Completada</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completada</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Completada</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Eliminar_Ingreso_Servicio</targetReference>
+            </connector>
+            <label>Dejó de estar completada</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Ya_Tiene_Ingreso</name>
+        <label>¿Ya tiene ingreso registrado?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Crear_Transaccion_Ingreso</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Si_Tiene_Ingreso</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Buscar_Ingreso_Existente</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Actualizar_Ultima_Visita</targetReference>
+            </connector>
+            <label>Sí (no duplicar)</label>
+        </rules>
+    </decisions>
+    <description>Mantiene un único ingreso por servicio por cita: lo crea cuando la cita pasa a &quot;Completada&quot; (también si se crea ya completada) sin duplicarlo, y lo elimina si la cita deja de estar completada. El monto es el Monto Pagado (o el Monto Total si no hay pago cargado). También actualiza la Última Visita del cliente.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>DescripcionTransaccion</name>
+        <dataType>String</dataType>
+        <expression>&quot;Pago cita: &quot; &amp; {!$Record.Client__r.Full_Name__c}</expression>
+    </formulas>
+    <formulas>
+        <description>Fecha de hoy como Date</description>
+        <name>Hoy</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <formulas>
+        <name>MontoTransaccion</name>
+        <dataType>Currency</dataType>
+        <expression>IF(ISNULL({!$Record.Amount_Paid__c}), IF(ISNULL({!$Record.Total_Amount__c}), 0, {!$Record.Total_Amount__c}), {!$Record.Amount_Paid__c})</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>Cita_Crear_Transaccion {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Cita - Crear Transacción al Completar</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Crea el registro de ingreso en Salon_Transaction__c.</description>
+        <name>Crear_Transaccion_Ingreso</name>
+        <label>Crear Transacción de Ingreso</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Actualizar_Ultima_Visita</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Amount__c</field>
+            <value>
+                <elementReference>MontoTransaccion</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Category__c</field>
+            <value>
+                <stringValue>Ingreso por Servicio</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description__c</field>
+            <value>
+                <elementReference>DescripcionTransaccion</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Related_Appointment__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Transaction_Date__c</field>
+            <value>
+                <elementReference>Hoy</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Transaction_Type__c</field>
+            <value>
+                <stringValue>Ingreso</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Salon_Transaction__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordDeletes>
+        <description>La cita dejó de estar completada: elimina su ingreso por servicio para que el balance no lo cuente.</description>
+        <name>Eliminar_Ingreso_Servicio</name>
+        <label>Eliminar Ingreso de la Cita</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Related_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Category__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Ingreso por Servicio</stringValue>
+            </value>
+        </filters>
+        <object>Salon_Transaction__c</object>
+    </recordDeletes>
+    <recordLookups>
+        <description>Busca si la cita ya tiene un ingreso por servicio (para no duplicarlo).</description>
+        <name>Buscar_Ingreso_Existente</name>
+        <label>Buscar Ingreso Existente</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Ya_Tiene_Ingreso</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Related_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Category__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Ingreso por Servicio</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Salon_Transaction__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Actualiza la fecha de última visita en el cliente.</description>
+        <name>Actualizar_Ultima_Visita</name>
+        <label>Actualizar Última Visita del Cliente</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Client__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Last_Visit_Date__c</field>
+            <value>
+                <elementReference>Hoy</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Salon_Client__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Que_Cambio</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>false</doesRequireRecordChangedToMeetCriteria>
+        <filterFormula>OR(ISPICKVAL({!$Record.Status__c}, &quot;Completada&quot;), ISPICKVAL({!$Record__Prior.Status__c}, &quot;Completada&quot;))</filterFormula>
+        <object>Salon_Appointment__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

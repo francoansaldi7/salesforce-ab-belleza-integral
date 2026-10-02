@@ -1,0 +1,90 @@
+:host {
+    --salon-pink:       #0d9668;
+    --salon-pink-light: #e6f9f2;
+    --salon-dark:       #1a1a2e;
+    --salon-gray:       #6b7280;
+    --radius:           12px;
+    --shadow:           0 2px 8px rgba(0,0,0,0.08);
+}
+
+.product-image-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.25rem;
+    background: var(--salon-pink-light);
+    border-bottom: 1px solid #a7f3d0;
+}
+
+.header-icon {
+    --lwc-colorTextIconDefault: var(--salon-pink);
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+}
+
+/* ── Image area ──────────────────────────────────────────────────────────── */
+.image-area {
+    width: 100%;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0faf6;
+}
+
+.product-img {
+    width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    display: block;
+}
+
+/* ── Placeholder ─────────────────────────────────────────────────────────── */
+.placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2.5rem 1rem;
+    color: var(--salon-gray);
+    min-height: 220px;
+    width: 100%;
+}
+
+.placeholder-icon {
+    --lwc-colorTextIconDefault: #d1d5db;
+}
+
+.placeholder-text {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin: 0;
+}
+
+/* ── Upload area ─────────────────────────────────────────────────────────── */
+.upload-area {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #f3f4f6;
+    background: white;
+}
+
+.upload-hint {
+    margin: 0.4rem 0 0;
+    font-size: 0.72rem;
+    color: var(--salon-gray);
+    line-height: 1.4;
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Medical_Conditions__c</fullName>
+    <label>Datos Médicos - Enfermedades</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Diabetes</fullName>
+                <default>false</default>
+                <label>Diabetes</label>
+            </value>
+            <value>
+                <fullName>Tiroides</fullName>
+                <default>false</default>
+                <label>Tiroides</label>
+            </value>
+            <value>
+                <fullName>Hipertension</fullName>
+                <default>false</default>
+                <label>Hipertension</label>
+            </value>
+            <value>
+                <fullName>Epilepsia</fullName>
+                <default>false</default>
+                <label>Epilepsia</label>
+            </value>
+            <value>
+                <fullName>Alteraciones digestivas / Herpes</fullName>
+                <default>false</default>
+                <label>Alteraciones digestivas / Herpes</label>
+            </value>
+            <value>
+                <fullName>Alergias o intolerancias</fullName>
+                <default>false</default>
+                <label>Alergias o intolerancias</label>
+            </value>
+            <value>
+                <fullName>Marcapasos</fullName>
+                <default>false</default>
+                <label>Marcapasos</label>
+            </value>
+            <value>
+                <fullName>Implantes metálicos</fullName>
+                <default>false</default>
+                <label>Implantes metálicos</label>
+            </value>
+            <value>
+                <fullName>Ninguna de las anteriores</fullName>
+                <default>false</default>
+                <label>Ninguna de las anteriores</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>5</visibleLines>
+</CustomField>

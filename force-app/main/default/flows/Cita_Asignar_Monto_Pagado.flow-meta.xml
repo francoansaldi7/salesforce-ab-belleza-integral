@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Asignar_Monto_Pagado</name>
+        <label>Asignar Monto Pagado = Monto Total</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Amount_Paid__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Total_Amount__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Monto_Pagado_Es_Nulo</name>
+        <label>¿Monto Pagado es nulo?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No es nulo</defaultConnectorLabel>
+        <rules>
+            <name>Es_Nulo</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Amount_Paid__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Asignar_Monto_Pagado</targetReference>
+            </connector>
+            <label>Es nulo</label>
+        </rules>
+    </decisions>
+    <description>Antes de guardar una cita, si Monto Pagado (Amount_Paid__c) está vacío lo iguala al Monto Total (Total_Amount__c). El usuario puede editarlo manualmente para aplicar descuentos o marcarlo en cero.</description>
+    <label>Cita — Asignar Monto Pagado</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Monto_Pagado_Es_Nulo</targetReference>
+        </connector>
+        <object>Salon_Appointment__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,126 @@
+<!--
+  @description  Tarjeta de perfil del cliente para la página de registro de Salon_Client__c.
+                Muestra nombre, datos de contacto, historial de visitas, total gastado,
+                badge VIP, banner de alertas de alergia y las últimas 5 citas.
+-->
+<template>
+    <!-- Loading state: spinner shown while the Apex call is in flight -->
+    <template lwc:if={isLoading}>
+        <div class="loading-wrap">
+            <lightning-spinner alternative-text="Cargando..." size="medium"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- Main card content: only rendered once the client record is loaded -->
+    <template lwc:elseif={client}>
+        <div class="client-card">
+
+            <!-- ── Cabecera ──────────────────────────────────────────── -->
+            <div class="card-header">
+                <div class="avatar">
+                    {clientInitials}
+                </div>
+                <div class="header-info">
+                    <div class="client-name">
+                        {client.Full_Name__c}
+                        <template lwc:if={client.VIP_Client__c}>
+                            <span class="badge-vip" title="Cliente VIP">⭐ VIP</span>
+                        </template>
+                    </div>
+                    <div class="client-meta">
+                        <template lwc:if={client.Phone__c}>
+                            <span class="meta-item">
+                                <lightning-icon icon-name="utility:call" size="xx-small"></lightning-icon>
+                                {client.Phone__c}
+                            </span>
+                        </template>
+                        <template lwc:if={client.Email__c}>
+                            <span class="meta-item">
+                                <lightning-icon icon-name="utility:email" size="xx-small"></lightning-icon>
+                                {client.Email__c}
+                            </span>
+                        </template>
+                        <template lwc:if={client.Birthday__c}>
+                            <span class="meta-item">
+                                <lightning-icon icon-name="utility:date_input" size="xx-small"></lightning-icon>
+                                Cumpleaños: {formattedBirthday}
+                            </span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Banner de Alergias ─────────────────────────────────── -->
+            <!-- This banner only appears when the client has an allergy note — it's a safety warning -->
+            <template lwc:if={client.Allergies_Notes__c}>
+                <div class="allergy-banner">
+                    <lightning-icon icon-name="utility:warning" size="small" variant="warning"></lightning-icon>
+                    <div class="allergy-content">
+                        <strong>ATENCIÓN — ALERGIAS / NOTAS DE SEGURIDAD</strong>
+                        <p>{client.Allergies_Notes__c}</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ── Estadísticas ───────────────────────────────────────── -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">{client.Total_Visits__c}</div>
+                    <div class="stat-label">Visitas Totales</div>
+                </div>
+                <div class="stat-box stat-money">
+                    <div class="stat-value">{formattedTotalSpent}</div>
+                    <div class="stat-label">Total Gastado</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{formattedLastVisit}</div>
+                    <div class="stat-label">Última Visita</div>
+                </div>
+            </div>
+
+            <!-- ── Servicios Preferidos ───────────────────────────────── -->
+            <!-- preferredServicesList splits the semicolon-delimited field into individual tags -->
+            <template lwc:if={hasPreferredServices}>
+                <div class="section">
+                    <div class="section-title">Servicios Preferidos</div>
+                    <div class="tag-list">
+                        <template for:each={preferredServicesList} for:item="svc">
+                            <span key={svc} class="tag">{svc}</span>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ── Últimas Citas ──────────────────────────────────────── -->
+            <div class="section">
+                <div class="section-title">Historial Reciente</div>
+                <template lwc:if={isLoadingAppointments}>
+                    <lightning-spinner size="small" alternative-text="Cargando citas"></lightning-spinner>
+                </template>
+                <template lwc:elseif={hasRecentAppointments}>
+                    <ul class="history-list">
+                        <template for:each={recentAppointments} for:item="appt">
+                            <li key={appt.Id} class="history-item">
+                                <span class="history-date">{appt.formattedDate}</span>
+                                <span class="history-services">{appt.Services__c}</span>
+                                <span class={appt.statusClass}>{appt.Status__c}</span>
+                                <span class="history-amount">{appt.formattedAmount}</span>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+                <template lwc:else>
+                    <p class="no-history">Sin citas registradas aún.</p>
+                </template>
+            </div>
+
+        </div>
+    </template>
+
+    <!-- Fallback: shown when the Apex call fails or returns no data -->
+    <template lwc:else>
+        <div class="loading-wrap">
+            <p>No se pudo cargar la información del cliente.</p>
+        </div>
+    </template>
+</template>

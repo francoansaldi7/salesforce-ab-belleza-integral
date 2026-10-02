@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Method_Required</fullName>
+    <active>true</active>
+    <description>El Método de Pago es obligatorio al guardar una cita.</description>
+    <errorConditionFormula>ISPICKVAL(Payment_Method__c, &quot;&quot;)</errorConditionFormula>
+    <errorMessage>El Método de Pago es obligatorio. Seleccioná Efectivo, Tarjeta o Transferencia.</errorMessage>
+</ValidationRule>

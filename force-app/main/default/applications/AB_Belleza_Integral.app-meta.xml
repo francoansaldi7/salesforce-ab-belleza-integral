@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#78B464</headerColor>
+        <shouldOverrideOrgTheme>true</shouldOverrideOrgTheme>
+    </brand>
+    <defaultLandingTab>standard-home</defaultLandingTab>
+    <description>App de gestión integral para AB Belleza Integral — citas, clientes, servicios, productos y finanzas en un solo lugar.</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>AB Belleza Integral</label>
+    <navType>Standard</navType>
+    <tabs>AB_Belleza_Integral</tabs>
+    <tabs>Salon_Appointment__c</tabs>
+    <tabs>Salon_Client__c</tabs>
+    <tabs>Salon_Service__c</tabs>
+    <tabs>Salon_Product__c</tabs>
+    <tabs>Salon_Transaction__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

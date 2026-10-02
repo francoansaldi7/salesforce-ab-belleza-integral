@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <customErrors>
+        <description>Muestra error cuando ya existe una cita en el mismo horario.</description>
+        <name>Error_Conflicto</name>
+        <label>Error de Conflicto</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>Ya existe una cita programada para este horario. Por favor, elegí otro horario.</errorMessage>
+            <fieldSelection>Appointment_Date__c</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <description>Verifica si se encontró alguna cita en conflicto.</description>
+        <name>Hay_Conflicto</name>
+        <label>¿Hay Conflicto?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Sin Conflicto</defaultConnectorLabel>
+        <rules>
+            <name>Si_hay_conflicto</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Buscar_Citas_Conflicto</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Conflicto</targetReference>
+            </connector>
+            <label>Sí, hay conflicto</label>
+        </rules>
+    </decisions>
+    <description>Verifica conflictos de horario antes de guardar una cita. Si ya existe una cita en el mismo horario que no está cancelada, bloquea el guardado con un mensaje de error.</description>
+    <environments>Default</environments>
+    <interviewLabel>Cita_Verificar_Conflicto {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Cita - Verificar Conflicto de Horario</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Busca citas existentes que coincidan con la misma fecha/hora y no estén canceladas.</description>
+        <name>Buscar_Citas_Conflicto</name>
+        <label>Buscar Citas en Conflicto</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Hay_Conflicto</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Appointment_Date__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Appointment_Date__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Cancelada</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Salon_Appointment__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Buscar_Citas_Conflicto</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Cancelada</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Appointment_Date__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Salon_Appointment__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

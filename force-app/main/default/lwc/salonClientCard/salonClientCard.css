@@ -1,0 +1,243 @@
+:host {
+    --salon-pink:       #0d9668;
+    --salon-gold:       #c9a84c;
+    --salon-dark:       #1a1a2e;
+    --salon-gray:       #6b7280;
+    --salon-pink-light: #e6f9f2;
+    --radius:           10px;
+    --shadow:           0 2px 8px rgba(0,0,0,0.08);
+}
+
+.client-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+/* ── Cabecera ─────────────────────────────────────────────────────────── */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #1a1a2e 0%, #3a1a4e 100%);
+}
+
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--salon-pink);
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid var(--salon-gold);
+}
+
+.header-info {
+    flex: 1;
+}
+
+.client-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.badge-vip {
+    background: var(--salon-gold);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 0.15rem 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.client-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-top: 0.4rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+}
+
+/* ── Banner de Alergias ───────────────────────────────────────────────── */
+.allergy-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-left: 4px solid #ef4444;
+    padding: 0.85rem 1rem;
+    margin: 0;
+}
+
+.allergy-content strong {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #7f1d1d;
+}
+
+.allergy-content p {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: #78350f;
+}
+
+/* ── Estadísticas ─────────────────────────────────────────────────────── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 1rem 0.5rem;
+    border-right: 1px solid #f3f4f6;
+}
+
+.stat-box:last-child {
+    border-right: none;
+}
+
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--salon-dark);
+}
+
+.stat-money .stat-value {
+    font-size: 1rem;
+    color: #0d9668;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--salon-gray);
+    margin-top: 0.2rem;
+}
+
+/* ── Secciones ────────────────────────────────────────────────────────── */
+.section {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--salon-pink);
+    margin-bottom: 0.6rem;
+}
+
+/* ── Tags ─────────────────────────────────────────────────────────────── */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.tag {
+    background: var(--salon-pink-light);
+    color: var(--salon-pink);
+    border-radius: 9999px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ── Historial ────────────────────────────────────────────────────────── */
+.history-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns: 7rem 1fr auto auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #f3f4f6;
+    font-size: 0.8rem;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-date {
+    color: var(--salon-gray);
+    font-weight: 600;
+}
+
+.history-services {
+    color: var(--salon-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-amount {
+    font-weight: 700;
+    color: #0d9668;
+    white-space: nowrap;
+}
+
+.hist-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 0.15rem 0.5rem;
+    white-space: nowrap;
+}
+
+.hist-scheduled  { background: #eff6ff; color: #2563eb; }
+.hist-confirmed  { background: #f0fdf4; color: #16a34a; }
+.hist-inprogress { background: #fffbeb; color: #d97706; }
+.hist-completed  { background: #f0fdf4; color: #15803d; }
+.hist-noshow     { background: #fef2f2; color: #dc2626; }
+.hist-cancelled  { background: #f9fafb; color: #6b7280; }
+
+.no-history {
+    font-size: 0.85rem;
+    color: var(--salon-gray);
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.loading-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
