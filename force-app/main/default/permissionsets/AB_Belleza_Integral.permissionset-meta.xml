@@ -57,6 +57,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Salon_Client__c.Instagram__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Salon_Client__c.Last_Visit_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -239,6 +244,10 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <tabSettings>
+        <tab>Historial_de_Citas</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>Salon_Appointment__c</tab>
         <visibility>Visible</visibility>

@@ -208,16 +208,16 @@ public with sharing class SalonController {
 
     // ─── Tarjeta de Cliente ───────────────────────────────────────────────────
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static Salon_Client__c getClientCard(Id clientId) {
         if (clientId == null) {
             throw auraError('Se requiere el ID del cliente.');
         }
         List<Salon_Client__c> clients = [
-            SELECT Id, Name, Full_Name__c, Phone__c, Email__c,
+            SELECT Id, Name, Full_Name__c, Phone__c, Email__c, Instagram__c,
                    Birthday__c, Preferred_Services__c,
-                   Allergies_Notes__c, Total_Visits__c,
-                   Total_Spent__c, VIP_Client__c, Last_Visit_Date__c
+                   Allergies_Notes__c, Medical_Conditions__c, Treatment_Protocol__c,
+                   Total_Visits__c, Total_Spent__c, VIP_Client__c, Last_Visit_Date__c
             FROM Salon_Client__c
             WHERE Id = :clientId
             WITH SECURITY_ENFORCED
@@ -229,7 +229,7 @@ public with sharing class SalonController {
         return clients[0];
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<Salon_Appointment__c> getClientRecentAppointments(Id clientId) {
         return [
             SELECT Id, Name, Appointment_Date__c, Status__c,
@@ -294,6 +294,85 @@ public with sharing class SalonController {
         } catch (DmlException e) {
             throw auraError(e.getDmlMessage(0));
         }
+    }
+
+    // ─── Historial de Citas ───────────────────────────────────────────────────
+
+    private static final Integer HISTORY_PAGE_SIZE = 15;
+
+    public class AppointmentHistory {
+        @AuraEnabled public List<Salon_Appointment__c> records;
+        @AuraEnabled public Integer totalCount = 0;
+        @AuraEnabled public Map<String, Integer> countByStatus = new Map<String, Integer>();
+        // Suma del Monto Pagado de las citas completadas dentro del filtro.
+        @AuraEnabled public Decimal totalBilled = 0;
+    }
+
+    /**
+     * Historial filtrable de citas. Todos los valores ingresados por el usuario van como
+     * variables bind; los estados se validan contra la lista de estados permitidos.
+     */
+    @AuraEnabled
+    public static AppointmentHistory getAppointmentHistory(
+        List<String> statuses, Date fromDate, Date toDate, String clientSearch, Boolean newestFirst, Integer pageNumber
+    ) {
+        Map<String, Object> binds = new Map<String, Object>();
+        List<String> conditions = new List<String>();
+
+        List<String> safeStatuses = new List<String>();
+        for (String status : statuses == null ? new List<String>() : statuses) {
+            if (!VALID_STATUSES.contains(status)) {
+                throw auraError('Estado no válido: ' + status);
+            }
+            safeStatuses.add(status);
+        }
+        if (!safeStatuses.isEmpty()) {
+            conditions.add('Status__c IN :statuses');
+            binds.put('statuses', safeStatuses);
+        }
+        if (fromDate != null) {
+            conditions.add('Appointment_Date__c >= :fromStart');
+            binds.put('fromStart', Datetime.newInstance(fromDate, Time.newInstance(0, 0, 0, 0)));
+        }
+        if (toDate != null) {
+            conditions.add('Appointment_Date__c < :toEndExclusive');
+            binds.put('toEndExclusive', Datetime.newInstance(toDate.addDays(1), Time.newInstance(0, 0, 0, 0)));
+        }
+        if (String.isNotBlank(clientSearch)) {
+            conditions.add('Client__r.Full_Name__c LIKE :clientPattern');
+            binds.put('clientPattern', '%' + clientSearch.trim() + '%');
+        }
+        String whereClause = conditions.isEmpty() ? '' : ' WHERE ' + String.join(conditions, ' AND ');
+
+        AppointmentHistory result = new AppointmentHistory();
+        for (AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
+            'SELECT Status__c status, COUNT(Id) total FROM Salon_Appointment__c' + whereClause + ' GROUP BY Status__c',
+            binds, AccessLevel.USER_MODE
+        )) {
+            Integer total = (Integer) ar.get('total');
+            result.countByStatus.put((String) ar.get('status'), total);
+            result.totalCount += total;
+        }
+
+        String billedWhere = whereClause + (whereClause == '' ? ' WHERE ' : ' AND ') + 'Status__c = \'Completada\'';
+        List<AggregateResult> billed = (List<AggregateResult>) Database.queryWithBinds(
+            'SELECT SUM(Amount_Paid__c) total FROM Salon_Appointment__c' + billedWhere, binds, AccessLevel.USER_MODE
+        );
+        Decimal billedTotal = billed.isEmpty() ? null : (Decimal) billed[0].get('total');
+        result.totalBilled = billedTotal == null ? 0 : billedTotal;
+
+        Integer safePage = (pageNumber == null || pageNumber < 1) ? 1 : pageNumber;
+        binds.put('pageSize', HISTORY_PAGE_SIZE);
+        binds.put('pageOffset', (safePage - 1) * HISTORY_PAGE_SIZE);
+        result.records = Database.queryWithBinds(
+            'SELECT Id, Name, Appointment_Date__c, Status__c, Services__c, Total_Amount__c, Amount_Paid__c, '
+                + 'Payment_Method__c, Client__c, Client__r.Full_Name__c, Client__r.VIP_Client__c '
+                + 'FROM Salon_Appointment__c' + whereClause
+                + ' ORDER BY Appointment_Date__c ' + (newestFirst == false ? 'ASC' : 'DESC')
+                + ' LIMIT :pageSize OFFSET :pageOffset',
+            binds, AccessLevel.USER_MODE
+        );
+        return result;
     }
 
     // AuraHandledException solo expone el texto a getMessage() si además se llama a setMessage().

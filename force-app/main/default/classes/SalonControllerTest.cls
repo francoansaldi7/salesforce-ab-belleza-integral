@@ -444,4 +444,92 @@ private class SalonControllerTest {
             Assert.areEqual('Se requiere el ID del cliente.', e.getMessage());
         }
     }
+
+    // ─── Historial de citas y tarjeta de cliente ─────────────────────────────
+
+    private static Salon_Client__c historyClient() {
+        Salon_Client__c client = new Salon_Client__c(Full_Name__c = 'Romina Historial');
+        insert client;
+        List<Salon_Appointment__c> appts = new List<Salon_Appointment__c>();
+        for (Integer i = 1; i <= 20; i++) {
+            appts.add(new Salon_Appointment__c(
+                Client__c           = client.Id,
+                Appointment_Date__c = DateTime.newInstance(Date.today().addDays(-i), Time.newInstance(9, 15, 0, 0)),
+                Status__c           = i <= 12 ? 'Completada' : (i <= 16 ? 'Cancelada' : 'No Asistió'),
+                Total_Amount__c     = 10000,
+                Amount_Paid__c      = 9000,
+                Payment_Method__c   = 'Efectivo'
+            ));
+        }
+        insert appts;
+        return client;
+    }
+
+    @IsTest
+    static void testGetAppointmentHistory_filtersPagesAndSummarizes() {
+        historyClient();
+
+        Test.startTest();
+        SalonController.AppointmentHistory page1 = SalonController.getAppointmentHistory(
+            new List<String>(), null, null, 'Historial', true, 1);
+        SalonController.AppointmentHistory page2 = SalonController.getAppointmentHistory(
+            new List<String>(), null, null, 'historial', true, 2);
+        Test.stopTest();
+
+        Assert.areEqual(20, page1.totalCount);
+        Assert.areEqual(15, page1.records.size());
+        Assert.areEqual(5, page2.records.size());
+        Assert.areEqual(12, page1.countByStatus.get('Completada'));
+        Assert.areEqual(4, page1.countByStatus.get('Cancelada'));
+        Assert.areEqual(4, page1.countByStatus.get('No Asistió'));
+        Assert.areEqual(108000, page1.totalBilled, 'Solo suma el Monto Pagado de las citas completadas');
+        Assert.isTrue(page1.records[0].Appointment_Date__c > page1.records[1].Appointment_Date__c, 'Más recientes primero');
+        Assert.areEqual('Romina Historial', page1.records[0].Client__r.Full_Name__c);
+    }
+
+    @IsTest
+    static void testGetAppointmentHistory_statusDateAndSortFilters() {
+        historyClient();
+
+        Test.startTest();
+        SalonController.AppointmentHistory cancelled = SalonController.getAppointmentHistory(
+            new List<String>{ 'Cancelada', 'No Asistió' }, null, null, null, true, 1);
+        SalonController.AppointmentHistory lastWeek = SalonController.getAppointmentHistory(
+            new List<String>{ 'Completada' }, Date.today().addDays(-7), Date.today().addDays(-1), 'Romina', false, 1);
+        Test.stopTest();
+
+        Assert.areEqual(8, cancelled.totalCount);
+        Assert.areEqual(0, cancelled.totalBilled, 'Sin citas completadas en el filtro, no hay monto');
+        Assert.areEqual(7, lastWeek.totalCount);
+        Assert.isTrue(lastWeek.records[0].Appointment_Date__c < lastWeek.records[1].Appointment_Date__c, 'Más antiguas primero');
+    }
+
+    @IsTest
+    static void testGetAppointmentHistory_rejectsUnknownStatus() {
+        try {
+            SalonController.getAppointmentHistory(new List<String>{ 'Inventado' }, null, null, null, true, 1);
+            Assert.fail('Debe rechazar estados desconocidos');
+        } catch (AuraHandledException e) {
+            Assert.areEqual('Estado no válido: Inventado', e.getMessage());
+        }
+    }
+
+    @IsTest
+    static void testGetClientCard_includesHealthAndInstagram() {
+        Salon_Client__c client = new Salon_Client__c(
+            Full_Name__c          = 'Noelia Ficha',
+            Instagram__c          = '@ejemplo.ficha.ab.test',
+            Medical_Conditions__c = 'Diabetes;Tiroides',
+            Treatment_Protocol__c = 'Sesión 2 de 6'
+        );
+        insert client;
+
+        Test.startTest();
+        Salon_Client__c result = SalonController.getClientCard(client.Id);
+        Test.stopTest();
+
+        Assert.areEqual('@ejemplo.ficha.ab.test', result.Instagram__c);
+        Assert.areEqual('Diabetes;Tiroides', result.Medical_Conditions__c);
+        Assert.areEqual('Sesión 2 de 6', result.Treatment_Protocol__c);
+    }
 }

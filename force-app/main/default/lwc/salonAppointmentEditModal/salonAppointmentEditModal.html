@@ -1,0 +1,36 @@
+<template>
+    <template lwc:if={isOpen}>
+        <div class="ab-modal-overlay" onkeydown={handleKeyDown}>
+            <section class="ab-modal ab-modal--wide" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+                <div class="ab-modal__header">
+                    <h2 class="ab-modal__title" id="edit-title">Editar cita</h2>
+                    <button class="ab-modal__close" onclick={close} aria-label="Cerrar">&#215;</button>
+                </div>
+                <div class="ab-modal__body">
+                    <lightning-record-edit-form
+                        record-id={appointmentId}
+                        object-api-name="Salon_Appointment__c"
+                        onsuccess={handleSuccess}
+                        onerror={handleError}>
+                        <lightning-messages></lightning-messages>
+                        <div class="form-grid">
+                            <lightning-input-field field-name="Client__c"></lightning-input-field>
+                            <lightning-input-field field-name="Appointment_Date__c"></lightning-input-field>
+                            <lightning-input-field field-name="Status__c"></lightning-input-field>
+                            <lightning-input-field field-name="Payment_Method__c"></lightning-input-field>
+                            <lightning-input-field field-name="Total_Amount__c"></lightning-input-field>
+                            <lightning-input-field field-name="Amount_Paid__c"></lightning-input-field>
+                            <lightning-input-field field-name="Reminder_Sent__c"></lightning-input-field>
+                        </div>
+                        <lightning-input-field field-name="Services__c"></lightning-input-field>
+                        <lightning-input-field field-name="Notes__c"></lightning-input-field>
+                        <div class="form-footer">
+                            <button type="button" class="ab-btn ab-btn--ghost" onclick={close}>Cancelar</button>
+                            <lightning-button type="submit" variant="brand" label="Guardar" class="save-btn"></lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </section>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,286 @@
+/* Sistema de diseño de AB Belleza Integral: paleta tomada del logo (salvia + crema).
+   Se importa en cada componente con @import 'c/salonStyles'. */
+:host {
+    --ab-sage:        #8a8466;
+    --ab-sage-dark:   #6e6950;
+    --ab-sage-deep:   #4a4736;
+    --ab-sage-light:  #ebe8da;
+    --ab-sage-mist:   #f4f2ea;
+    --ab-cream:       #f2ebcd;
+    --ab-ivory:       #faf8f2;
+    --ab-surface:     #ffffff;
+    --ab-ink:         #2e2c25;
+    --ab-muted:       #7b776a;
+    --ab-line:        #e7e2d3;
+    --ab-gold:        #b08d4a;
+    --ab-gold-light:  #f6eedb;
+    --ab-danger:      #b5523b;
+    --ab-danger-light:#f8e9e4;
+    --ab-radius:      14px;
+    --ab-radius-sm:   9px;
+    --ab-shadow:      0 1px 2px rgba(46, 44, 37, 0.05), 0 4px 16px rgba(46, 44, 37, 0.06);
+    --ab-serif:       'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --ab-sans:        'Salesforce Sans', -apple-system, 'Segoe UI', Arial, sans-serif;
+    --ab-transition:  0.16s ease;
+
+    display:     block;
+    color:       var(--ab-ink);
+    font-family: var(--ab-sans);
+}
+
+/* ── Tarjetas y títulos ─────────────────────────────────────────────────── */
+.ab-card {
+    background:    var(--ab-surface);
+    border:        1px solid var(--ab-line);
+    border-radius: var(--ab-radius);
+    box-shadow:    var(--ab-shadow);
+}
+
+.ab-title {
+    font-family:    var(--ab-serif);
+    font-weight:    600;
+    letter-spacing: 0.3px;
+    color:          var(--ab-sage-deep);
+}
+
+.ab-eyebrow {
+    font-size:      0.68rem;
+    font-weight:    600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color:          var(--ab-muted);
+}
+
+/* ── Insignias de estado ────────────────────────────────────────────────── */
+.status-pill {
+    display:        inline-flex;
+    align-items:    center;
+    gap:            0.3rem;
+    padding:        0.18rem 0.6rem;
+    border-radius:  9999px;
+    font-size:      0.72rem;
+    font-weight:    600;
+    white-space:    nowrap;
+}
+
+.status-pill::before {
+    content:       '';
+    width:         6px;
+    height:        6px;
+    border-radius: 50%;
+    background:    currentColor;
+}
+
+.status-programada  { background: #eef1f6; color: #55698c; }
+.status-confirmada  { background: #ecefe2; color: #56633b; }
+.status-enprogreso  { background: #fbf3e3; color: #a76b14; }
+.status-completada  { background: #e7f2ea; color: #357149; }
+.status-noasistio   { background: var(--ab-danger-light); color: var(--ab-danger); }
+.status-cancelada   { background: #f1efe9; color: #85816f; }
+
+.badge {
+    display:        inline-block;
+    padding:        0.08rem 0.45rem;
+    border-radius:  5px;
+    font-size:      0.62rem;
+    font-weight:    700;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+.badge-vip     { background: var(--ab-gold-light); color: var(--ab-gold); border: 1px solid #e6d3a7; }
+.badge-allergy { background: var(--ab-danger-light); color: var(--ab-danger); border: 1px solid #efc9bd; cursor: help; }
+
+.service-tag {
+    display:       inline-block;
+    padding:       0.12rem 0.55rem;
+    border-radius: 9999px;
+    background:    var(--ab-sage-mist);
+    border:        1px solid var(--ab-line);
+    color:         var(--ab-sage-deep);
+    font-size:     0.7rem;
+    white-space:   nowrap;
+}
+
+/* ── Botones ────────────────────────────────────────────────────────────── */
+.ab-btn {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.4rem;
+    padding:         0.55rem 1.1rem;
+    border-radius:   var(--ab-radius-sm);
+    border:          1px solid var(--ab-sage-dark);
+    background:      var(--ab-sage-dark);
+    color:           #fffdf6;
+    font-family:     var(--ab-sans);
+    font-size:       0.85rem;
+    font-weight:     600;
+    cursor:          pointer;
+    text-decoration: none;
+    transition:      background var(--ab-transition), border-color var(--ab-transition), transform var(--ab-transition);
+}
+
+.ab-btn:hover          { background: var(--ab-sage-deep); border-color: var(--ab-sage-deep); transform: translateY(-1px); }
+.ab-btn:focus-visible  { outline: 2px solid var(--ab-gold); outline-offset: 2px; }
+.ab-btn:disabled       { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.ab-btn--ghost {
+    background: var(--ab-surface);
+    color:      var(--ab-sage-deep);
+    border-color: var(--ab-line);
+}
+
+.ab-btn--ghost:hover { background: var(--ab-sage-mist); border-color: var(--ab-sage); }
+
+.ab-input {
+    width:         100%;
+    box-sizing:    border-box;
+    padding:       0.5rem 0.8rem;
+    border:        1px solid var(--ab-line);
+    border-radius: var(--ab-radius-sm);
+    background:    var(--ab-surface);
+    color:         var(--ab-ink);
+    font-family:   var(--ab-sans);
+    font-size:     0.88rem;
+    transition:    border-color var(--ab-transition), box-shadow var(--ab-transition);
+}
+
+.ab-input:focus {
+    outline:      none;
+    border-color: var(--ab-sage);
+    box-shadow:   0 0 0 3px rgba(138, 132, 102, 0.18);
+}
+
+/* ── Carga ──────────────────────────────────────────────────────────────── */
+.ab-loader-wrap {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    padding:         2rem 1rem;
+}
+
+.ab-loader {
+    width:         28px;
+    height:        28px;
+    border-radius: 50%;
+    border:        3px solid var(--ab-sage-light);
+    border-top-color: var(--ab-sage-dark);
+    animation:     ab-spin 0.8s linear infinite;
+}
+
+.ab-loader--sm { width: 18px; height: 18px; border-width: 2px; }
+
+.ab-loading-overlay {
+    position:        absolute;
+    inset:           0;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    background:      rgba(250, 248, 242, 0.7);
+    z-index:         2;
+    border-radius:   inherit;
+}
+
+.ab-skeleton {
+    display:         inline-block;
+    width:           60%;
+    height:          1.4rem;
+    border-radius:   6px;
+    background:      linear-gradient(90deg, var(--ab-sage-mist) 0%, var(--ab-sage-light) 50%, var(--ab-sage-mist) 100%);
+    background-size: 200% 100%;
+    animation:       ab-shimmer 1.2s ease-in-out infinite;
+}
+
+.ab-empty {
+    text-align: center;
+    padding:    2.25rem 1rem;
+    color:      var(--ab-muted);
+    font-size:  0.9rem;
+}
+
+.ab-empty__title {
+    font-family:   var(--ab-serif);
+    font-size:     1.25rem;
+    color:         var(--ab-sage-deep);
+    margin-bottom: 0.25rem;
+}
+
+/* ── Modales ────────────────────────────────────────────────────────────── */
+.ab-modal-overlay {
+    position:        fixed;
+    inset:           0;
+    z-index:         9100;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    padding:         1rem;
+    background:      rgba(46, 44, 37, 0.45);
+    backdrop-filter: blur(2px);
+}
+
+.ab-modal {
+    width:          100%;
+    max-width:      540px;
+    max-height:     85vh;
+    display:        flex;
+    flex-direction: column;
+    background:     var(--ab-surface);
+    border-radius:  var(--ab-radius);
+    border-top:     4px solid var(--ab-sage);
+    box-shadow:     0 24px 60px rgba(46, 44, 37, 0.28);
+    overflow:       hidden;
+}
+
+.ab-modal--wide { max-width: 980px; width: 92vw; }
+
+.ab-modal__header {
+    display:       flex;
+    align-items:   center;
+    gap:           0.6rem;
+    padding:       1rem 1.25rem;
+    background:    var(--ab-sage-mist);
+    border-bottom: 1px solid var(--ab-line);
+    flex-shrink:   0;
+}
+
+.ab-modal__title {
+    flex:        1;
+    margin:      0;
+    font-family: var(--ab-serif);
+    font-size:   1.35rem;
+    font-weight: 600;
+    color:       var(--ab-sage-deep);
+}
+
+.ab-modal__close {
+    background:    none;
+    border:        none;
+    font-size:     1.4rem;
+    line-height:   1;
+    color:         var(--ab-muted);
+    cursor:        pointer;
+    padding:       0.1rem 0.4rem;
+    border-radius: 6px;
+}
+
+.ab-modal__close:hover { color: var(--ab-danger); background: var(--ab-danger-light); }
+
+.ab-modal__body {
+    overflow-y: auto;
+    padding:    1.25rem;
+}
+
+@media (max-width: 480px) {
+    .ab-modal-overlay { align-items: flex-end; padding: 0; }
+    .ab-modal         { max-height: 92vh; border-radius: var(--ab-radius) var(--ab-radius) 0 0; }
+    .ab-modal--wide   { width: 100%; }
+}
+
+@keyframes ab-spin    { to { transform: rotate(360deg); } }
+@keyframes ab-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .ab-loader   { animation-duration: 2s; }
+    .ab-skeleton { animation: none; }
+}

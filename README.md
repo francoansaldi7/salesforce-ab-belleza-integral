@@ -10,8 +10,11 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 
 ## Features
 
+### Design
+A custom visual identity taken from the salon's logo: **sage and cream**, warm charcoal text and **elegant serif headings**. It's shared by every component through one CSS module (`salonStyles`), with themed loading states and a responsive layout for phones and tablets.
+
 ### Dashboard (`salonHome`)
-- **Today's appointments** and **upcoming appointments**, each showing the client, services, amount paid and status. The client name carries a **VIP** badge and an **ALERGIA** badge (with the allergy note on hover) when relevant.
+- **Today's appointments** and **upcoming appointments**. Each row shows a time chip, the client's initials, **VIP** and **ALERGIA** badges (the allergy note shows on hover), service tags, the amount paid and a status pill.
 - **One-click status changes** (Confirmada, En Progreso, Completada, No Asistió, Cancelada) and an **inline edit form** for any appointment
 - **KPI tiles:**
   - Monthly balance, which opens a **month-by-month history** of income, expenses and transactions
@@ -19,7 +22,7 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
   - **Low-stock products**
   - **Inactive clients** (no visit in 60 days)
 - The KPIs refresh themselves every 60 seconds.
-- **Quick actions** launch guided wizards: *Nueva Cita*, *Registrar Gasto* and *Vender Producto*
+- **Quick actions** launch guided wizards (*Nueva Cita*, *Registrar Gasto*, *Vender Producto*) or open the appointment history
 
 ### Guided wizards (Screen Flows)
 - **Nueva Cita**, in three steps: client, services, then date, time and payment. If the time slot is already taken, the wizard **returns to step 3 with a clear message** naming the existing booking, so you never lose what you typed.
@@ -35,9 +38,28 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 | `Cita_Crear_Transaccion` | Keeps **exactly one service income per completed appointment**. It creates the income when the appointment becomes *Completada* (including when it's created that way), never duplicates it, and removes it if the appointment stops being completed. It also updates the client's last visit. |
 | `Cliente_Flag_VIP` | Flags a client as VIP at **$500.000 spent or 10 completed visits**, using roll-ups that count completed appointments only |
 
-### Record page components
-- **Product card** (`salonProductCard`, on the product record page): upload a product photo and see it on the product's page
-- **Client card** (`salonClientCard`): avatar initials, contact details, birthday, VIP status, lifetime spend and visits, allergy notes, and the last five appointments. It's ready to drop onto the client record page in the Lightning App Builder.
+### Appointment history (`salonHistory`, the *Historial* tab)
+- **Every appointment**, whatever its status: completed, cancelled, no-show or still open
+- **Filters:**
+  - status chips
+  - period: this month, last 3 months, this year, all, or custom dates
+  - client search, debounced
+- **Summary strip** for the current filter: total appointments, completed, cancelled, no-shows, and the **amount billed** (amount paid on completed appointments)
+- **Sorting:** newest or oldest first, 15 per page
+- Clicking a row **edits the appointment**; clicking the client's name opens **her client file**.
+
+### Client file (`salonClientCard`, on the client record page)
+- **One-tap contact:**
+  - **WhatsApp**: Argentine numbers like `011 15 2345-6789` are normalized to `wa.me/5491123456789`
+  - **call**, **email** and **Instagram** (a new optional field)
+  - Each button appears only when that data exists.
+- **"Ficha de salud":** allergies as a safety alert, medical conditions as tags, and treatment follow-up notes
+- **At a glance:** total visits, total spent, last visit, birthday (with a "¡Cumple hoy!" reminder within the week) and preferred services
+- **Recent appointments:** the last five, with a link to her **full history** (the Historial tab, pre-filtered)
+- Refreshes itself whenever the record is edited.
+
+### Product card (`salonProductCard`, on the product record page)
+- Upload a product photo and see it on the product's page
 
 ## Architecture
 
@@ -45,17 +67,22 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 force-app/main/default/
 ├── applications/AB_Belleza_Integral.app-meta.xml
 ├── classes/
-│   ├── SalonController.cls          # Dashboard, client card and product image queries; status updates
-│   ├── SalonControllerTest.cls      # 23 tests
+│   ├── SalonController.cls          # Dashboard, history, client card and product image queries; status updates
+│   ├── SalonControllerTest.cls      # 27 tests
 │   └── SalonAutomationTest.cls      # 11 tests covering the record-triggered flows
 ├── flows/                           # 3 guided wizards + 4 record-triggered automations
 ├── lwc/
-│   ├── salonHome/                   # Dashboard (+ Jest tests)
-│   ├── salonClientCard/             # Client record card
-│   └── salonProductCard/            # Product photo card
+│   ├── salonHome/                   # Dashboard
+│   ├── salonHistory/                # Historial tab
+│   ├── salonClientCard/             # Client file (record page)
+│   ├── salonAppointmentEditModal/   # Shared "edit appointment" window
+│   ├── salonProductCard/            # Product photo card
+│   ├── salonUtils/                  # Shared JS: pesos, dates, status styles, WhatsApp/Instagram links
+│   └── salonStyles/                 # Shared CSS design system (sage + cream)
 ├── objects/                         # Salon_Appointment__c, Salon_Client__c, Salon_Service__c,
 │                                    # Salon_Product__c, Salon_Transaction__c
-├── flexipages/                      # Dashboard app page + product record page
+├── layouts/                         # Page layouts for the five objects
+├── flexipages/                      # Dashboard + Historial app pages, client and product record pages
 ├── permissionsets/AB_Belleza_Integral.permissionset-meta.xml
 └── tabs/
 scripts/apex/seed-sample-data.apex   # Optional fictional demo data
@@ -65,7 +92,7 @@ scripts/apex/seed-sample-data.apex   # Optional fictional demo data
 
 | Object | Purpose | Key fields |
 |---|---|---|
-| `Salon_Client__c` (Cliente) | Client file | Phone, email, birthday, preferred services, allergy notes, medical conditions, treatment follow-up, last visit, **Total Gastado** and **Total de Visitas** (roll-ups of completed appointments), VIP |
+| `Salon_Client__c` (Cliente) | Client file | Phone, email, Instagram, birthday, preferred services, allergy notes, medical conditions, treatment follow-up, last visit, **Total Gastado** and **Total de Visitas** (roll-ups of completed appointments), VIP |
 | `Salon_Appointment__c` (Cita) | Booking. Master-detail to Cliente. | Date and time, services (multi-select), status, total amount, amount paid, payment method, notes |
 | `Salon_Service__c` (Servicio) | Service catalog | Category, price, duration, active |
 | `Salon_Product__c` (Producto) | Inventory | Category, cost and sale price, stock, low-stock threshold, supplier, profit margin (formula) |
@@ -99,17 +126,23 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 
 ## Testing
 
-**Apex**: 34 tests. They cover every controller method and every record-triggered flow:
+**Apex**: 38 tests. They cover every controller method and every record-triggered flow:
 - one income per appointment: no duplicates, removal on cancel, creation when an appointment is created already completed
 - double-booking prevention, and that a cancelled appointment frees its slot
 - the VIP thresholds
 - monthly totals with more than 200 transactions
+- history filters, summary, sorting and paging
 
 ```bash
 sf apex run test --class-names SalonControllerTest --class-names SalonAutomationTest --code-coverage --result-format human --target-org salonOrg
 ```
 
-**LWC (Jest)**: 10 tests for the dashboard, covering KPIs and peso formatting, badges, today and upcoming views, status changes, the wizard lifecycle, the balance history, and the low-stock and inactive-client details.
+**LWC (Jest)**: 37 tests:
+- **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history, and the stock and inactive-client details
+- **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, and arriving pre-filtered from a client file
+- **Client file:** contact links, the health section, stats and the history link
+- **Edit window**
+- **Helpers:** Argentine WhatsApp formats, Instagram parsing and formatting
 
 ```bash
 npm install

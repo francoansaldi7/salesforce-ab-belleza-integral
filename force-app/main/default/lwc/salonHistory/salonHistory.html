@@ -1,0 +1,139 @@
+<template>
+    <div class="history-page">
+
+        <header class="page-header">
+            <div>
+                <div class="ab-eyebrow header-eyebrow">AB Belleza Integral</div>
+                <h1 class="page-title">Historial de citas</h1>
+            </div>
+            <button class="ab-btn ab-btn--ghost sort-btn" onclick={handleSortToggle} title="Cambiar el orden">
+                <lightning-icon icon-name="utility:sort" size="xx-small" class="sort-icon"></lightning-icon>
+                {sortLabel}
+            </button>
+        </header>
+
+        <!-- Filtros -->
+        <section class="ab-card filters">
+            <div class="filter-row">
+                <div class="search">
+                    <lightning-icon icon-name="utility:search" size="x-small" class="search-icon"></lightning-icon>
+                    <input type="search" class="ab-input search-input" placeholder="Buscar clienta…" aria-label="Buscar clienta"
+                        value={searchTerm} oninput={handleSearchInput} />
+                </div>
+                <div class="segments" role="group" aria-label="Período">
+                    <template for:each={periodOptions} for:item="option">
+                        <button key={option.value} class={option.className} data-period={option.value}
+                            aria-pressed={option.ariaPressed} onclick={handlePeriodChange}>{option.label}</button>
+                    </template>
+                </div>
+            </div>
+
+            <template lwc:if={isCustomPeriod}>
+                <div class="custom-range">
+                    <label class="range-field">
+                        <span class="ab-eyebrow">Desde</span>
+                        <input type="date" class="ab-input date-from" value={customFrom} onchange={handleCustomFromChange} />
+                    </label>
+                    <label class="range-field">
+                        <span class="ab-eyebrow">Hasta</span>
+                        <input type="date" class="ab-input date-to" value={customTo} onchange={handleCustomToChange} />
+                    </label>
+                </div>
+            </template>
+
+            <div class="chips" role="group" aria-label="Estados">
+                <template for:each={statusChips} for:item="chip">
+                    <button key={chip.value} class={chip.className} data-status={chip.value}
+                        aria-pressed={chip.ariaPressed} onclick={handleStatusToggle}>
+                        {chip.label}
+                    </button>
+                </template>
+                <button class="link-btn clear-statuses" onclick={handleClearStatuses}>Todos los estados</button>
+            </div>
+        </section>
+
+        <!-- Resumen -->
+        <section class="summary">
+            <div class="ab-card summary-tile">
+                <div class="ab-eyebrow">Citas</div>
+                <div class="summary-value summary-total">{summary.total}</div>
+            </div>
+            <div class="ab-card summary-tile summary-tile--completed">
+                <div class="ab-eyebrow">Completadas</div>
+                <div class="summary-value summary-completed">{summary.completed}</div>
+            </div>
+            <div class="ab-card summary-tile summary-tile--cancelled">
+                <div class="ab-eyebrow">Canceladas</div>
+                <div class="summary-value summary-cancelled">{summary.cancelled}</div>
+            </div>
+            <div class="ab-card summary-tile summary-tile--noshow">
+                <div class="ab-eyebrow">No asistió</div>
+                <div class="summary-value summary-noshow">{summary.noShow}</div>
+            </div>
+            <div class="ab-card summary-tile summary-tile--billed">
+                <div class="ab-eyebrow">Facturado</div>
+                <div class="summary-value summary-billed">{summary.billed}</div>
+            </div>
+        </section>
+
+        <!-- Lista -->
+        <section class="ab-card list-card">
+            <template lwc:if={isLoading}>
+                <div class="ab-loading-overlay"><div class="ab-loader" role="status" aria-label="Cargando"></div></div>
+            </template>
+
+            <template lwc:if={hasRows}>
+                <ul class="appointment-list">
+                    <template for:each={rows} for:item="row">
+                        <li key={row.id} class="appointment-row" data-id={row.id} tabindex="0" role="button"
+                            onclick={handleRowClick} onkeydown={handleRowKeyDown} title="Editar cita">
+                            <div class="date-chip">
+                                <span class="date-chip__day">{row.day}</span>
+                                <span class="date-chip__month">{row.month} {row.year}</span>
+                            </div>
+                            <div class="row-main">
+                                <div class="row-top">
+                                    <button class="client-link" data-client-id={row.clientId} onclick={handleClientClick}
+                                        title="Abrir la ficha de la clienta">{row.clientName}</button>
+                                    <template lwc:if={row.isVip}><span class="badge badge-vip">VIP</span></template>
+                                    <span class="row-time">{row.weekdayTime}</span>
+                                </div>
+                                <div class="row-services">
+                                    <template for:each={row.services} for:item="service">
+                                        <span key={service} class="service-tag">{service}</span>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="row-side">
+                                <span class={row.statusClass}>{row.status}</span>
+                                <span class="row-amount">{row.amount}</span>
+                                <template lwc:if={row.paymentMethod}>
+                                    <span class="row-method">{row.paymentMethod}</span>
+                                </template>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            <template lwc:elseif={showEmpty}>
+                <div class="ab-empty">
+                    <div class="ab-empty__title">Sin citas para mostrar</div>
+                    Probá con otro período, otros estados u otra búsqueda.
+                </div>
+            </template>
+            <template lwc:else>
+                <div class="list-placeholder"></div>
+            </template>
+
+            <template lwc:if={showPagination}>
+                <div class="pagination">
+                    <button class="ab-btn ab-btn--ghost page-btn" onclick={handlePreviousPage} disabled={isFirstPage}>‹ Anterior</button>
+                    <span class="page-label">{paginationLabel}</span>
+                    <button class="ab-btn ab-btn--ghost page-btn" onclick={handleNextPage} disabled={isLastPage}>Siguiente ›</button>
+                </div>
+            </template>
+        </section>
+
+        <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleSaved}></c-salon-appointment-edit-modal>
+    </div>
+</template>

@@ -122,7 +122,7 @@ describe('c-salon-home', () => {
     it('abre el asistente de Nueva Cita y lo cierra al terminar', async () => {
         const element = await render();
 
-        $(element, '.quick-actions .slds-button_brand').click();
+        $(element, '.action-new-appointment').click();
         await flushPromises();
         const flow = $(element, 'lightning-flow');
         expect(flow.flowApiName).toBe('Flujo_Nueva_Cita');
@@ -138,7 +138,7 @@ describe('c-salon-home', () => {
     it('no da la operación por terminada mientras el asistente sigue abierto', async () => {
         const element = await render();
 
-        $(element, '.quick-actions .slds-button_brand').click();
+        $(element, '.action-new-appointment').click();
         await flushPromises();
         $(element, 'lightning-flow').dispatchEvent(new CustomEvent('statuschange', { detail: { status: 'STARTED' } }));
         await flushPromises();

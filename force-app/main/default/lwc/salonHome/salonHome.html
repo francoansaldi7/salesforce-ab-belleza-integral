@@ -1,253 +1,168 @@
 <!--
-  @description  Página de inicio de AB Belleza Integral.
-                Muestra las citas del día, métricas clave y acciones rápidas.
+  Panel de Control de AB Belleza Integral: citas del día / próximas, indicadores,
+  acciones rápidas (asistentes) y detalles de balance, stock y clientes inactivos.
 -->
 <template>
     <div class="salon-home">
 
-        <!-- ── Encabezado ─────────────────────────────────────────── -->
-        <div class="salon-header">
-            <div class="salon-header__title">AB Belleza Integral</div>
-            <div class="salon-header__subtitle">Panel de Control · {today}</div>
-        </div>
-
-        <!-- ── KPIs ──────────────────────────────────────────────── -->
-        <!-- Four metric tiles. The stock and dormant tiles are clickable and open detail modals. -->
-        <div class="kpi-grid">
-
-            <div class="kpi-tile kpi-income kpi-tile--clickable" onclick={handleBalanceTileClick} title="Ver historial de balances">
-                <div class="kpi-tile__label">Balance Mensual</div>
-                <div class="kpi-tile__value">
-                    <template lwc:if={isLoadingKpis}>
-                        <lightning-spinner size="small" alternative-text="Cargando"></lightning-spinner>
-                    </template>
-                    <template lwc:else>
-                        <span class={monthlyBalanceClass}>{monthlyBalanceFormatted}</span>
-                    </template>
-                </div>
-                <div class="kpi-tile__hint">Ver historial</div>
+        <!-- Encabezado -->
+        <header class="salon-header">
+            <div class="monogram" aria-hidden="true">AB</div>
+            <div class="header-text">
+                <div class="salon-header__title">AB Belleza Integral</div>
+                <div class="salon-header__subtitle">Panel de control · {today}</div>
             </div>
+        </header>
+
+        <!-- Indicadores -->
+        <div class="kpi-grid">
+            <button class="kpi-tile kpi-income kpi-tile--clickable" onclick={handleBalanceTileClick} title="Ver historial de balances">
+                <span class="kpi-icon"><lightning-icon icon-name="utility:moneybag" size="x-small"></lightning-icon></span>
+                <span class="kpi-tile__label">Balance mensual</span>
+                <span class="kpi-tile__value">
+                    <template lwc:if={isLoadingKpis}><span class="ab-skeleton" aria-label="Cargando"></span></template>
+                    <template lwc:else><span class={monthlyBalanceClass}>{monthlyBalanceFormatted}</span></template>
+                </span>
+                <span class="kpi-tile__hint">Ver historial ›</span>
+            </button>
 
             <div class="kpi-tile kpi-appointments">
-                <div class="kpi-tile__label">Citas Abiertas</div>
-                <div class="kpi-tile__value">
-                    <template lwc:if={isLoadingKpis}>
-                        <lightning-spinner size="small" alternative-text="Cargando"></lightning-spinner>
-                    </template>
-                    <template lwc:else>
-                        {openAppointmentsCount}
-                    </template>
-                </div>
+                <span class="kpi-icon"><lightning-icon icon-name="utility:event" size="x-small"></lightning-icon></span>
+                <span class="kpi-tile__label">Citas abiertas</span>
+                <span class="kpi-tile__value">
+                    <template lwc:if={isLoadingKpis}><span class="ab-skeleton" aria-label="Cargando"></span></template>
+                    <template lwc:else>{openAppointmentsCount}</template>
+                </span>
+                <span class="kpi-tile__hint kpi-tile__hint--static">Desde hoy</span>
             </div>
 
-            <div class="kpi-tile kpi-stock kpi-tile--clickable" onclick={handleLowStockClick} title="Ver productos con bajo stock">
-                <div class="kpi-tile__label">Bajo Stock</div>
-                <div class="kpi-tile__value">
-                    <template lwc:if={isLoadingKpis}>
-                        <lightning-spinner size="small" alternative-text="Cargando"></lightning-spinner>
-                    </template>
-                    <template lwc:else>
-                        {lowStockCount}
-                    </template>
-                </div>
-                <div class="kpi-tile__hint">Ver detalle</div>
-            </div>
+            <button class="kpi-tile kpi-stock kpi-tile--clickable" onclick={handleLowStockClick} title="Ver productos con bajo stock">
+                <span class="kpi-icon kpi-icon--warn"><lightning-icon icon-name="utility:warning" size="x-small"></lightning-icon></span>
+                <span class="kpi-tile__label">Bajo stock</span>
+                <span class="kpi-tile__value">
+                    <template lwc:if={isLoadingKpis}><span class="ab-skeleton" aria-label="Cargando"></span></template>
+                    <template lwc:else>{lowStockCount}</template>
+                </span>
+                <span class="kpi-tile__hint">Ver detalle ›</span>
+            </button>
 
-            <div class="kpi-tile kpi-dormant kpi-tile--clickable" onclick={handleDormantClick} title="Ver clientes inactivos">
-                <div class="kpi-tile__label">Clientes Inactivos</div>
-                <div class="kpi-tile__value">
-                    <template lwc:if={isLoadingKpis}>
-                        <lightning-spinner size="small" alternative-text="Cargando"></lightning-spinner>
-                    </template>
-                    <template lwc:else>
-                        {dormantClientsCount}
-                    </template>
-                </div>
-                <div class="kpi-tile__hint">Ver detalle</div>
-            </div>
-
+            <button class="kpi-tile kpi-dormant kpi-tile--clickable" onclick={handleDormantClick} title="Ver clientes inactivos">
+                <span class="kpi-icon"><lightning-icon icon-name="utility:people" size="x-small"></lightning-icon></span>
+                <span class="kpi-tile__label">Clientes inactivos</span>
+                <span class="kpi-tile__value">
+                    <template lwc:if={isLoadingKpis}><span class="ab-skeleton" aria-label="Cargando"></span></template>
+                    <template lwc:else>{dormantClientsCount}</template>
+                </span>
+                <span class="kpi-tile__hint">Ver detalle ›</span>
+            </button>
         </div>
 
-        <!-- ── Acciones Rápidas ────────────────────────────────────── -->
-        <!-- Native SLDS buttons used so all three can share the same min-width via CSS.
-             lightning-button shadow DOM prevents width control from the parent. -->
+        <!-- Acciones rápidas -->
         <div class="quick-actions">
-            <button class="slds-button slds-button_brand action-btn" onclick={openNewAppointmentFlow}>
-                + Nueva Cita
-            </button>
-            <button class="slds-button slds-button_neutral action-btn" onclick={openExpenseFlow}>
-                + Registrar Gasto
-            </button>
-            <button class="slds-button slds-button_neutral action-btn" onclick={openProductSaleFlow}>
-                + Vender Producto
+            <button class="ab-btn action-btn action-new-appointment" onclick={openNewAppointmentFlow}>+ Nueva cita</button>
+            <button class="ab-btn ab-btn--ghost action-btn action-expense" onclick={openExpenseFlow}>+ Registrar gasto</button>
+            <button class="ab-btn ab-btn--ghost action-btn action-sale" onclick={openProductSaleFlow}>+ Vender producto</button>
+            <button class="ab-btn ab-btn--ghost action-btn action-history" onclick={handleOpenHistory}>
+                <lightning-icon icon-name="utility:clock" size="xx-small" class="action-icon"></lightning-icon>
+                Historial de citas
             </button>
         </div>
 
-        <!-- ── Flujo incrustado ────────────────────────────────────── -->
-        <!-- Modal overlay that hosts a lightning-flow. The flow API name is set dynamically
-             so the same overlay can run any of the three quick-action flows. -->
+        <!-- Asistente (flow) -->
         <template lwc:if={showFlow}>
-            <div class="flow-overlay">
-                <div class="flow-container">
-                    <div class="flow-header">
-                        <span class="flow-header__title">{activeFlowLabel}</span>
-                        <lightning-button-icon
-                            icon-name="utility:close"
-                            alternative-text="Cerrar"
-                            onclick={closeFlow}
-                            variant="bare"
-                            size="medium">
-                        </lightning-button-icon>
+            <div class="ab-modal-overlay">
+                <section class="ab-modal flow-container" role="dialog" aria-modal="true">
+                    <div class="ab-modal__header flow-header">
+                        <h2 class="ab-modal__title flow-header__title">{activeFlowLabel}</h2>
+                        <button class="ab-modal__close" onclick={closeFlow} aria-label="Cerrar">&#215;</button>
                     </div>
-                    <lightning-flow
-                        flow-api-name={activeFlowName}
-                        onstatuschange={handleFlowStatusChange}>
-                    </lightning-flow>
-                </div>
+                    <div class="ab-modal__body">
+                        <lightning-flow flow-api-name={activeFlowName} onstatuschange={handleFlowStatusChange}></lightning-flow>
+                    </div>
+                </section>
             </div>
         </template>
 
-        <!-- ── Contenido Principal ─────────────────────────────────── -->
-        <div class="main-content">
-
-            <!-- Citas: panel switches between Today and Upcoming via the view-toggle buttons -->
-            <div class="content-panel">
-                <div class="panel-header">
-                    <lightning-icon icon-name="utility:event" size="small"></lightning-icon>
-                    <span class="panel-header__title">{panelTitle}</span>
-                    <div class="view-toggle">
-                        <button class={todayBtnClass} onclick={handleViewToggle} data-view="today">Hoy</button>
-                        <button class={pendingBtnClass} onclick={handleViewToggle} data-view="pending">Próximas</button>
-                    </div>
-                    <span class="panel-header__count">{appointmentCount}</span>
+        <!-- Citas -->
+        <section class="content-panel">
+            <div class="panel-header">
+                <h2 class="panel-header__title">{panelTitle}</h2>
+                <span class="panel-header__count">{appointmentCount}</span>
+                <div class="view-toggle" role="group" aria-label="Vista de citas">
+                    <button class={todayBtnClass} onclick={handleViewToggle} data-view="today">Hoy</button>
+                    <button class={pendingBtnClass} onclick={handleViewToggle} data-view="pending">Próximas</button>
                 </div>
-
-                <template lwc:if={isLoadingAppointments}>
-                    <div class="loading-container">
-                        <lightning-spinner alternative-text="Cargando citas..." size="medium"></lightning-spinner>
-                    </div>
-                </template>
-
-                <template lwc:elseif={hasAppointments}>
-                    <ul class="appointment-list">
-                        <!-- Each row: time/date label, client name (with VIP/Allergy badges), services,
-                             amount, a coloured status badge, and a dropdown to change the status -->
-                        <template for:each={activeAppointments} for:item="appt">
-                            <li key={appt.Id} class="appointment-item" data-id={appt.Id} onclick={handleAppointmentClick}>
-                                <div class="appt-time">{appt.displayLabel}</div>
-                                <div class="appt-info">
-                                    <div class="appt-client">
-                                        {appt.Client__r.Full_Name__c}
-                                        <!-- VIP and Allergy badges are only shown when the fields are populated -->
-                                        <template lwc:if={appt.Client__r.VIP_Client__c}>
-                                            <span class="badge badge-vip">VIP</span>
-                                        </template>
-                                        <template lwc:if={appt.Client__r.Allergies_Notes__c}>
-                                            <span class="badge badge-allergy" title={appt.Client__r.Allergies_Notes__c}>ALERGIA</span>
-                                        </template>
-                                    </div>
-                                    <div class="appt-services">{appt.Services__c}</div>
-                                    <div class="appt-amount">{appt.formattedAmount}</div>
-                                </div>
-                                <div class="appt-actions">
-                                    <span class={appt.statusClass}>{appt.Status__c}</span>
-                                    <lightning-button-menu
-                                        alternative-text="Cambiar Estado"
-                                        icon-size="x-small"
-                                        menu-alignment="right"
-                                        onselect={handleStatusChange}
-                                        data-id={appt.Id}>
-                                        <lightning-menu-item value="Confirmada" label="Confirmar" data-id={appt.Id}></lightning-menu-item>
-                                        <lightning-menu-item value="En Progreso" label="En Progreso" data-id={appt.Id}></lightning-menu-item>
-                                        <lightning-menu-item value="Completada" label="Completada" data-id={appt.Id}></lightning-menu-item>
-                                        <lightning-menu-item value="No Asistió" label="No Asistió" data-id={appt.Id}></lightning-menu-item>
-                                        <lightning-menu-item value="Cancelada" label="Cancelar" data-id={appt.Id}></lightning-menu-item>
-                                    </lightning-button-menu>
-                                </div>
-                            </li>
-                        </template>
-                    </ul>
-                </template>
-
-                <template lwc:else>
-                    <div class="empty-state">
-                        <lightning-icon icon-name="utility:event" size="medium" class="empty-icon"></lightning-icon>
-                        <p>{emptyMessage}</p>
-                    </div>
-                </template>
             </div>
 
-        </div>
+            <template lwc:if={isLoadingAppointments}>
+                <div class="ab-loader-wrap"><div class="ab-loader" role="status" aria-label="Cargando citas"></div></div>
+            </template>
 
-        <!-- ── Modal: Editar Cita ─────────────────────────────────────── -->
-        <template lwc:if={showEditModal}>
-            <div class="modal-overlay">
-                <div class="modal-container modal-container--edit">
-                    <div class="modal-header">
-                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
-                        <span class="modal-title">Editar Cita</span>
-                        <lightning-button-icon
-                            icon-name="utility:close"
-                            alternative-text="Cerrar"
-                            onclick={closeEditModal}
-                            variant="bare"
-                            size="medium">
-                        </lightning-button-icon>
-                    </div>
-                    <div class="modal-body">
-                        <lightning-record-edit-form
-                            record-id={selectedAppointmentId}
-                            object-api-name="Salon_Appointment__c"
-                            onsuccess={handleEditSuccess}
-                            onerror={handleEditError}>
-                            <lightning-messages></lightning-messages>
-                            <lightning-input-field field-name="Client__c"></lightning-input-field>
-                            <lightning-input-field field-name="Services__c"></lightning-input-field>
-                            <lightning-input-field field-name="Appointment_Date__c"></lightning-input-field>
-                            <lightning-input-field field-name="Status__c"></lightning-input-field>
-                            <lightning-input-field field-name="Payment_Method__c"></lightning-input-field>
-                            <lightning-input-field field-name="Total_Amount__c"></lightning-input-field>
-                            <lightning-input-field field-name="Amount_Paid__c"></lightning-input-field>
-                            <lightning-input-field field-name="Notes__c"></lightning-input-field>
-                            <lightning-input-field field-name="Reminder_Sent__c"></lightning-input-field>
-                            <div class="edit-form-footer">
-                                <lightning-button
-                                    label="Cancelar"
-                                    onclick={closeEditModal}>
-                                </lightning-button>
-                                <lightning-button
-                                    variant="brand"
-                                    type="submit"
-                                    label="Guardar">
-                                </lightning-button>
+            <template lwc:elseif={hasAppointments}>
+                <ul class="appointment-list">
+                    <template for:each={activeAppointments} for:item="appt">
+                        <li key={appt.Id} class="appointment-item" data-id={appt.Id} onclick={handleAppointmentClick} title="Editar cita">
+                            <div class="appt-time">{appt.displayLabel}</div>
+                            <div class="appt-avatar" aria-hidden="true">{appt.initials}</div>
+                            <div class="appt-info">
+                                <div class="appt-client">
+                                    {appt.Client__r.Full_Name__c}
+                                    <template lwc:if={appt.Client__r.VIP_Client__c}>
+                                        <span class="badge badge-vip">VIP</span>
+                                    </template>
+                                    <template lwc:if={appt.Client__r.Allergies_Notes__c}>
+                                        <span class="badge badge-allergy" title={appt.Client__r.Allergies_Notes__c}>ALERGIA</span>
+                                    </template>
+                                </div>
+                                <div class="appt-services">
+                                    <template for:each={appt.services} for:item="service">
+                                        <span key={service} class="service-tag">{service}</span>
+                                    </template>
+                                </div>
                             </div>
-                        </lightning-record-edit-form>
-                    </div>
-                </div>
-            </div>
-        </template>
+                            <div class="appt-actions">
+                                <span class="appt-amount">{appt.formattedAmount}</span>
+                                <span class={appt.statusClass}>{appt.Status__c}</span>
+                                <lightning-button-menu
+                                    alternative-text="Cambiar estado"
+                                    icon-size="x-small"
+                                    menu-alignment="right"
+                                    onselect={handleStatusChange}
+                                    data-id={appt.Id}>
+                                    <lightning-menu-item value="Confirmada" label="Confirmar"></lightning-menu-item>
+                                    <lightning-menu-item value="En Progreso" label="En progreso"></lightning-menu-item>
+                                    <lightning-menu-item value="Completada" label="Completada"></lightning-menu-item>
+                                    <lightning-menu-item value="No Asistió" label="No asistió"></lightning-menu-item>
+                                    <lightning-menu-item value="Cancelada" label="Cancelar"></lightning-menu-item>
+                                </lightning-button-menu>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </template>
 
-        <!-- ── Modal: Bajo Stock ──────────────────────────────────────── -->
-        <!-- Lazy-loaded: product list is fetched from Apex only when the user opens this modal -->
+            <template lwc:else>
+                <div class="ab-empty empty-state">
+                    <div class="ab-empty__title">Agenda libre</div>
+                    <p>{emptyMessage}</p>
+                </div>
+            </template>
+        </section>
+
+        <!-- Editar cita -->
+        <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleEditSuccess}></c-salon-appointment-edit-modal>
+
+        <!-- Bajo stock -->
         <template lwc:if={showLowStockModal}>
-            <div class="modal-overlay">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <lightning-icon icon-name="utility:warning" size="x-small" class="modal-header-icon modal-header-icon--stock"></lightning-icon>
-                        <span class="modal-title">Productos con Bajo Stock</span>
-                        <lightning-button-icon
-                            icon-name="utility:close"
-                            alternative-text="Cerrar"
-                            onclick={closeLowStockModal}
-                            variant="bare"
-                            size="medium">
-                        </lightning-button-icon>
+            <div class="ab-modal-overlay">
+                <section class="ab-modal" role="dialog" aria-modal="true">
+                    <div class="ab-modal__header">
+                        <h2 class="ab-modal__title">Productos con bajo stock</h2>
+                        <button class="ab-modal__close" onclick={closeLowStockModal} aria-label="Cerrar">&#215;</button>
                     </div>
-                    <div class="modal-body">
+                    <div class="ab-modal__body modal-body--list">
                         <template lwc:if={isLoadingLowStock}>
-                            <div class="loading-container">
-                                <lightning-spinner size="medium" alternative-text="Cargando..."></lightning-spinner>
-                            </div>
+                            <div class="ab-loader-wrap"><div class="ab-loader" role="status" aria-label="Cargando"></div></div>
                         </template>
                         <template lwc:elseif={hasLowStockProducts}>
                             <ul class="modal-list">
@@ -267,34 +182,24 @@
                             </ul>
                         </template>
                         <template lwc:else>
-                            <div class="modal-empty">No hay productos con bajo stock.</div>
+                            <div class="ab-empty">No hay productos con bajo stock.</div>
                         </template>
                     </div>
-                </div>
+                </section>
             </div>
         </template>
 
-        <!-- ── Modal: Clientes Inactivos ──────────────────────────────── -->
-        <!-- Lazy-loaded: client list is fetched from Apex only when the user opens this modal -->
+        <!-- Clientes inactivos -->
         <template lwc:if={showDormantModal}>
-            <div class="modal-overlay">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <lightning-icon icon-name="utility:people" size="x-small" class="modal-header-icon modal-header-icon--dormant"></lightning-icon>
-                        <span class="modal-title">Clientes Inactivos</span>
-                        <lightning-button-icon
-                            icon-name="utility:close"
-                            alternative-text="Cerrar"
-                            onclick={closeDormantModal}
-                            variant="bare"
-                            size="medium">
-                        </lightning-button-icon>
+            <div class="ab-modal-overlay">
+                <section class="ab-modal" role="dialog" aria-modal="true">
+                    <div class="ab-modal__header">
+                        <h2 class="ab-modal__title">Clientes inactivos</h2>
+                        <button class="ab-modal__close" onclick={closeDormantModal} aria-label="Cerrar">&#215;</button>
                     </div>
-                    <div class="modal-body">
+                    <div class="ab-modal__body modal-body--list">
                         <template lwc:if={isLoadingDormant}>
-                            <div class="loading-container">
-                                <lightning-spinner size="medium" alternative-text="Cargando..."></lightning-spinner>
-                            </div>
+                            <div class="ab-loader-wrap"><div class="ab-loader" role="status" aria-label="Cargando"></div></div>
                         </template>
                         <template lwc:elseif={hasDormantClients}>
                             <ul class="modal-list">
@@ -313,73 +218,48 @@
                             </ul>
                         </template>
                         <template lwc:else>
-                            <div class="modal-empty">No hay clientes inactivos.</div>
+                            <div class="ab-empty">No hay clientes inactivos.</div>
                         </template>
                     </div>
-                </div>
+                </section>
             </div>
         </template>
 
-        <!-- ── Modal: Historial de Balance ───────────────────────────────────── -->
+        <!-- Historial de balance -->
         <template lwc:if={showBalanceModal}>
-            <div class="modal-overlay">
-                <div class="modal-container modal-container--balance">
-                    <div class="modal-header">
-                        <lightning-icon icon-name="utility:moneybag" size="x-small" class="modal-header-icon modal-header-icon--balance"></lightning-icon>
-                        <span class="modal-title">Balance — {balanceMonthLabel}</span>
-                        <lightning-button-icon
-                            icon-name="utility:close"
-                            alternative-text="Cerrar"
-                            onclick={closeBalanceModal}
-                            variant="bare"
-                            size="medium">
-                        </lightning-button-icon>
+            <div class="ab-modal-overlay">
+                <section class="ab-modal ab-modal--balance" role="dialog" aria-modal="true">
+                    <div class="ab-modal__header">
+                        <h2 class="ab-modal__title">Balance · {balanceMonthLabel}</h2>
+                        <button class="ab-modal__close" onclick={closeBalanceModal} aria-label="Cerrar">&#215;</button>
                     </div>
-                    <div class="modal-body">
-
-                        <!-- Month / Year pickers -->
+                    <div class="ab-modal__body">
                         <div class="balance-picker">
-                            <lightning-combobox
-                                label="Mes"
-                                value={selectedMonthValue}
-                                options={monthOptions}
-                                onchange={handleBalanceMonthChange}
-                                class="balance-picker__field">
-                            </lightning-combobox>
-                            <lightning-combobox
-                                label="Año"
-                                value={selectedYearValue}
-                                options={yearOptions}
-                                onchange={handleBalanceYearChange}
-                                class="balance-picker__field">
-                            </lightning-combobox>
+                            <lightning-combobox label="Mes" value={selectedMonthValue} options={monthOptions}
+                                onchange={handleBalanceMonthChange} class="balance-picker__field"></lightning-combobox>
+                            <lightning-combobox label="Año" value={selectedYearValue} options={yearOptions}
+                                onchange={handleBalanceYearChange} class="balance-picker__field"></lightning-combobox>
                         </div>
 
-                        <!-- Loading -->
                         <template lwc:if={isLoadingBalance}>
-                            <div class="loading-container">
-                                <lightning-spinner size="medium" alternative-text="Cargando..."></lightning-spinner>
-                            </div>
+                            <div class="ab-loader-wrap"><div class="ab-loader" role="status" aria-label="Cargando"></div></div>
                         </template>
-
                         <template lwc:else>
-                            <!-- Summary cards: Ingresos / Gastos / Balance -->
                             <div class="balance-summary">
                                 <div class="balance-card balance-card--income">
-                                    <div class="balance-card__label">Ingresos</div>
+                                    <div class="ab-eyebrow">Ingresos</div>
                                     <div class="balance-card__value">{balanceIncome}</div>
                                 </div>
                                 <div class="balance-card balance-card--expense">
-                                    <div class="balance-card__label">Gastos</div>
+                                    <div class="ab-eyebrow">Gastos</div>
                                     <div class="balance-card__value">{balanceExpenses}</div>
                                 </div>
                                 <div class="balance-card balance-card--net">
-                                    <div class="balance-card__label">Balance Neto</div>
+                                    <div class="ab-eyebrow">Balance neto</div>
                                     <div class={balanceNetClass}>{balanceNet}</div>
                                 </div>
                             </div>
 
-                            <!-- Transaction list -->
                             <template lwc:if={hasBalanceTransactions}>
                                 <ul class="modal-list">
                                     <template for:each={balanceTransactions} for:item="tx">
@@ -403,12 +283,11 @@
                                 </ul>
                             </template>
                             <template lwc:else>
-                                <div class="modal-empty">No hay transacciones registradas para este mes.</div>
+                                <div class="ab-empty">No hay transacciones registradas para este mes.</div>
                             </template>
                         </template>
-
                     </div>
-                </div>
+                </section>
             </div>
         </template>
 

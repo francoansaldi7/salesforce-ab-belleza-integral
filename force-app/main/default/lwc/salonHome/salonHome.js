@@ -1,7 +1,9 @@
 // Main dashboard for the AB Belleza Integral salon app.
 // Displays today's appointments, KPI tiles, and quick-action flows.
 import { LightningElement, track } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { formatCurrency, initials, splitMultiPicklist, statusClass } from 'c/salonUtils';
 // Apex methods for loading salon data
 import getTodayAppointments from '@salesforce/apex/SalonController.getTodayAppointments';
 import getPendingAppointments from '@salesforce/apex/SalonController.getPendingAppointments';
@@ -14,17 +16,7 @@ import getDormantClients from '@salesforce/apex/SalonController.getDormantClient
 import updateAppointmentStatus from '@salesforce/apex/SalonController.updateAppointmentStatus';
 import getMonthlyBalanceDetail from '@salesforce/apex/SalonController.getMonthlyBalanceDetail';
 
-// Maps each appointment status to a CSS class for the coloured badge in the UI.
-const STATUS_CLASSES = {
-    'Programada'  : 'status-badge status-scheduled',
-    'Confirmada'  : 'status-badge status-confirmed',
-    'En Progreso' : 'status-badge status-inprogress',
-    'Completada'  : 'status-badge status-completed',
-    'No Asistió'  : 'status-badge status-noshow',
-    'Cancelada'   : 'status-badge status-cancelled'
-};
-
-export default class SalonHome extends LightningElement {
+export default class SalonHome extends NavigationMixin(LightningElement) {
 
     // ── Estado ──────────────────────────────────────────────────────────────
 
@@ -47,10 +39,6 @@ export default class SalonHome extends LightningElement {
     selectedMonth      = new Date().getMonth() + 1; // 1-based
     @track balanceDetail = null;  // MonthlyBalanceDetail from Apex — @track needed for nested object mutation
     isLoadingBalance   = false;
-
-    // Modal editar cita
-    @track showEditModal          = false;
-    @track selectedAppointmentId  = null;
 
     // Modales detalle — shown when the user clicks a KPI tile
     @track showLowStockModal  = false;
@@ -199,9 +187,9 @@ export default class SalonHome extends LightningElement {
         return `${names[this.selectedMonth - 1]} ${this.selectedYear}`;
     }
 
-    get balanceIncome()   { return this.balanceDetail ? this.formatCurrency(this.balanceDetail.income)   : '$0,00'; }
-    get balanceExpenses() { return this.balanceDetail ? this.formatCurrency(this.balanceDetail.expenses) : '$0,00'; }
-    get balanceNet()      { return this.balanceDetail ? this.formatCurrency(this.balanceDetail.balance)  : '$0,00'; }
+    get balanceIncome()   { return this.formatCurrency(this.balanceDetail ? this.balanceDetail.income : 0); }
+    get balanceExpenses() { return this.formatCurrency(this.balanceDetail ? this.balanceDetail.expenses : 0); }
+    get balanceNet()      { return this.formatCurrency(this.balanceDetail ? this.balanceDetail.balance : 0); }
     get balanceNetClass() { return this.balanceDetail && this.balanceDetail.balance < 0 ? 'balance-card__value balance-card__value--negative' : 'balance-card__value'; }
 
     get balanceTransactions() { return this.balanceDetail ? this.balanceDetail.transactions : []; }
@@ -221,17 +209,14 @@ export default class SalonHome extends LightningElement {
     handleAppointmentClick(event) {
         // Ignore clicks that originate from the status-change dropdown
         if (event.target.closest('lightning-button-menu')) return;
-        this.selectedAppointmentId = event.currentTarget.dataset.id;
-        this.showEditModal = true;
+        this.refs.editModal.open(event.currentTarget.dataset.id);
     }
 
-    closeEditModal() {
-        this.showEditModal = false;
-        this.selectedAppointmentId = null;
-    }
-
-    handleEditError(event) {
-        this.showError('No se pudo guardar: ' + (event.detail?.detail || event.detail?.message || 'Error de validación'));
+    handleOpenHistory() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__navItemPage',
+            attributes: { apiName: 'Historial_de_Citas' }
+        });
     }
 
     handleEditSuccess(event) {
@@ -255,8 +240,7 @@ export default class SalonHome extends LightningElement {
         this.todayAppointments   = applyPatch(this.todayAppointments,   false);
         this.pendingAppointments = applyPatch(this.pendingAppointments, true);
 
-        this.closeEditModal();
-        this.showToast('Guardado', 'La cita fue actualizada.', 'success');
+        // The edit modal already confirmed the save with a toast.
         this._silentRefreshAppointments(); // refresh without triggering the loading spinner
     }
 
@@ -461,7 +445,9 @@ export default class SalonHome extends LightningElement {
             displayLabel:    showDate ? this._formatDateLabel(appt.Appointment_Date__c)
                                       : this._formatTime(appt.Appointment_Date__c),
             formattedAmount: this.formatCurrency(appt.Amount_Paid__c),
-            statusClass:     STATUS_CLASSES[appt.Status__c] || 'status-badge' // fallback if status not in map
+            initials:        initials(appt.Client__r?.Full_Name__c),
+            services:        splitMultiPicklist(appt.Services__c),
+            statusClass:     statusClass(appt.Status__c)
         };
     }
 
@@ -498,10 +484,7 @@ export default class SalonHome extends LightningElement {
 
     // Formats a number as Argentine pesos using the browser's Intl API.
     formatCurrency(amount) {
-        if (amount == null) return '$0,00';
-        return new Intl.NumberFormat('es-AR', {
-            style: 'currency', currency: 'ARS'
-        }).format(amount);
+        return formatCurrency(amount);
     }
 
     showToast(title, message, variant) {
