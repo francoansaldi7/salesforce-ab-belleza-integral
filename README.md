@@ -15,7 +15,7 @@ A custom visual identity taken from the salon's logo: **sage and cream**, warm c
 
 ### Dashboard (`salonHome`)
 - **Today's appointments** and **upcoming appointments**. Each row shows a time chip, the client's initials, **VIP** and **ALERGIA** badges (the allergy note shows on hover), service tags, the amount paid and a status pill.
-- **One-click status changes** (Confirmada, En Progreso, Completada, No Asistió, Cancelada) and an **inline edit form** for any appointment
+- **One-click status changes** (Confirmada, En Progreso, Completada, No Asistió, Cancelada), an **edit window** for any appointment, and **delete with confirmation**. Deleting also removes the appointment's service income from the balance, and the record stays recoverable from the Recycle Bin for 15 days.
 - **KPI tiles:**
   - Monthly balance, which opens a **month-by-month history** of income, expenses and transactions
   - Open appointments
@@ -68,7 +68,7 @@ force-app/main/default/
 ├── applications/AB_Belleza_Integral.app-meta.xml
 ├── classes/
 │   ├── SalonController.cls          # Dashboard, history, client card and product image queries; status updates
-│   ├── SalonControllerTest.cls      # 27 tests
+│   ├── SalonControllerTest.cls      # 29 tests
 │   └── SalonAutomationTest.cls      # 11 tests covering the record-triggered flows
 ├── flows/                           # 3 guided wizards + 4 record-triggered automations
 ├── lwc/
@@ -126,22 +126,23 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 
 ## Testing
 
-**Apex**: 38 tests. They cover every controller method and every record-triggered flow:
+**Apex**: 40 tests. They cover every controller method and every record-triggered flow:
 - one income per appointment: no duplicates, removal on cancel, creation when an appointment is created already completed
 - double-booking prevention, and that a cancelled appointment frees its slot
 - the VIP thresholds
 - monthly totals with more than 200 transactions
 - history filters, summary, sorting and paging
+- deleting an appointment together with its service income only
 
 ```bash
 sf apex run test --class-names SalonControllerTest --class-names SalonAutomationTest --code-coverage --result-format human --target-org salonOrg
 ```
 
-**LWC (Jest)**: 37 tests:
+**LWC (Jest)**: 42 tests:
 - **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history, and the stock and inactive-client details
 - **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, and arriving pre-filtered from a client file
 - **Client file:** contact links, the health section, stats and the history link
-- **Edit window**
+- **Edit window:** editing, plus delete with confirmation, cancel and retry on failure
 - **Helpers:** Argentine WhatsApp formats, Instagram parsing and formatting
 
 ```bash

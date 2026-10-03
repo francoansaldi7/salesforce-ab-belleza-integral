@@ -133,6 +133,22 @@
 
 .ab-btn--ghost:hover { background: var(--ab-sage-mist); border-color: var(--ab-sage); }
 
+.ab-btn--danger {
+    background:   var(--ab-danger);
+    border-color: var(--ab-danger);
+    color:        #fffdf6;
+}
+
+.ab-btn--danger:hover { background: #9a4330; border-color: #9a4330; }
+
+.ab-btn--danger-ghost {
+    background:   var(--ab-surface);
+    border-color: #efc9bd;
+    color:        var(--ab-danger);
+}
+
+.ab-btn--danger-ghost:hover { background: var(--ab-danger-light); border-color: var(--ab-danger); }
+
 .ab-input {
     width:         100%;
     box-sizing:    border-box;

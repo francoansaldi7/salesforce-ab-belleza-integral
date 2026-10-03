@@ -1,5 +1,8 @@
 import { createElement } from 'lwc';
 import SalonAppointmentEditModal from 'c/salonAppointmentEditModal';
+import deleteAppointment from '@salesforce/apex/SalonController.deleteAppointment';
+
+jest.mock('@salesforce/apex/SalonController.deleteAppointment', () => ({ default: jest.fn() }), { virtual: true });
 
 const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
 
@@ -15,6 +18,7 @@ describe('c-salon-appointment-edit-modal', () => {
         while (document.body.firstChild) {
             document.body.removeChild(document.body.firstChild);
         }
+        jest.clearAllMocks();
     });
 
     it('está cerrado hasta que se abre con una cita', async () => {
@@ -57,5 +61,61 @@ describe('c-salon-appointment-edit-modal', () => {
         element.shadowRoot.querySelector('.ab-modal__close').click();
         await flushPromises();
         expect(element.shadowRoot.querySelector('.ab-modal')).toBeNull();
+    });
+
+    it('desde la edición pide confirmación antes de eliminar y "No, volver" regresa al formulario', async () => {
+        const element = await render();
+        element.open('a01', 'Ana Ejemplo · mié 14/10 · 15:00');
+        await flushPromises();
+
+        element.shadowRoot.querySelector('.delete-btn').click();
+        await flushPromises();
+        expect(element.shadowRoot.querySelector('.confirm-text').textContent).toContain('¿Eliminar la cita de Ana Ejemplo · mié 14/10 · 15:00?');
+        expect(deleteAppointment).not.toHaveBeenCalled();
+
+        element.shadowRoot.querySelector('.cancel-delete').click();
+        await flushPromises();
+        expect(element.shadowRoot.querySelector('lightning-record-edit-form')).not.toBeNull();
+    });
+
+    it('al confirmar elimina la cita, avisa al padre y se cierra', async () => {
+        deleteAppointment.mockResolvedValue();
+        const element = await render();
+        const deleted = jest.fn();
+        element.addEventListener('deleted', deleted);
+        element.confirmDelete('a07', 'Sofía Demo · jue 15/10 · 10:00');
+        await flushPromises();
+
+        element.shadowRoot.querySelector('.confirm-delete').click();
+        await flushPromises();
+
+        expect(deleteAppointment).toHaveBeenCalledWith({ appointmentId: 'a07' });
+        expect(deleted.mock.calls[0][0].detail).toEqual({ id: 'a07' });
+        expect(element.shadowRoot.querySelector('.ab-modal')).toBeNull();
+    });
+
+    it('abierta desde el menú, "No, volver" simplemente cierra', async () => {
+        const element = await render();
+        element.confirmDelete('a07', 'Sofía Demo');
+        await flushPromises();
+
+        element.shadowRoot.querySelector('.cancel-delete').click();
+        await flushPromises();
+
+        expect(element.shadowRoot.querySelector('.ab-modal')).toBeNull();
+        expect(deleteAppointment).not.toHaveBeenCalled();
+    });
+
+    it('si falla la eliminación queda abierta para reintentar', async () => {
+        deleteAppointment.mockRejectedValue({ body: { message: 'La cita ya no existe.' } });
+        const element = await render();
+        element.confirmDelete('a07', 'Sofía Demo');
+        await flushPromises();
+
+        element.shadowRoot.querySelector('.confirm-delete').click();
+        await flushPromises();
+
+        expect(element.shadowRoot.querySelector('.confirm-delete')).not.toBeNull();
+        expect(element.shadowRoot.querySelector('.confirm-delete').disabled).toBe(false);
     });
 });

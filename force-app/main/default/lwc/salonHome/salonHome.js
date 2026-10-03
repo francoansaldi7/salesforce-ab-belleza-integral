@@ -209,7 +209,19 @@ export default class SalonHome extends NavigationMixin(LightningElement) {
     handleAppointmentClick(event) {
         // Ignore clicks that originate from the status-change dropdown
         if (event.target.closest('lightning-button-menu')) return;
-        this.refs.editModal.open(event.currentTarget.dataset.id);
+        const id = event.currentTarget.dataset.id;
+        this.refs.editModal.open(id, this._appointmentLabel(id));
+    }
+
+    handleAppointmentDeleted() {
+        this.loadData();
+    }
+
+    // "Ana Pérez · mié 14/10 · 15:00": identifies the appointment in the delete confirmation.
+    _appointmentLabel(id) {
+        const appt = [...this.todayAppointments, ...this.pendingAppointments].find(a => a.Id === id);
+        if (!appt) return '';
+        return `${appt.Client__r?.Full_Name__c || ''} · ${this._formatDateLabel(appt.Appointment_Date__c)}`;
     }
 
     handleOpenHistory() {
@@ -391,6 +403,11 @@ export default class SalonHome extends NavigationMixin(LightningElement) {
     handleStatusChange(event) {
         const newStatus     = event.detail.value;
         const appointmentId = event.currentTarget.dataset.id;
+
+        if (newStatus === 'Eliminar') {
+            this.refs.editModal.confirmDelete(appointmentId, this._appointmentLabel(appointmentId));
+            return;
+        }
 
         updateAppointmentStatus({ appointmentId, newStatus })
             .then(() => {

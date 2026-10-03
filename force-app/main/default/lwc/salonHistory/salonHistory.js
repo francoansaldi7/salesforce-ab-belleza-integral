@@ -286,7 +286,8 @@ export default class SalonHistory extends NavigationMixin(LightningElement) {
     // ── Acciones de fila ─────────────────────────────────────────────────────
 
     handleRowClick(event) {
-        this.refs.editModal.open(event.currentTarget.dataset.id);
+        const row = this.rows.find(r => r.id === event.currentTarget.dataset.id);
+        this.refs.editModal.open(row.id, `${row.clientName} · ${row.day} ${row.month} ${row.year} · ${row.weekdayTime}`);
     }
 
     handleRowKeyDown(event) {

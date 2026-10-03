@@ -9,6 +9,7 @@
 .form-footer {
     display:         flex;
     justify-content: flex-end;
+    align-items:     center;
     gap:             0.6rem;
     margin-top:      1rem;
     padding-top:     1rem;
@@ -26,4 +27,29 @@
     --slds-c-button-brand-color-background-hover:  var(--ab-sage-deep);
     --slds-c-button-brand-color-border-hover:      var(--ab-sage-deep);
     --slds-c-button-radius-border:                 9px;
+}
+
+.footer-spacer { flex: 1; }
+
+.confirm-modal  { max-width: 440px; border-top-color: var(--ab-danger); }
+.confirm-header { background: var(--ab-danger-light); }
+
+.confirm-text {
+    margin:      0 0 0.5rem;
+    font-size:   1rem;
+    font-weight: 600;
+    color:       var(--ab-ink);
+}
+
+.confirm-hint {
+    margin:    0;
+    font-size: 0.82rem;
+    color:     var(--ab-muted);
+    line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+    .form-footer   { flex-wrap: wrap; }
+    .footer-spacer { display: none; }
+    .delete-btn    { order: 3; width: 100%; }
 }

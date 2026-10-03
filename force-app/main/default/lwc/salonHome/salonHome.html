@@ -101,7 +101,7 @@
             <template lwc:elseif={hasAppointments}>
                 <ul class="appointment-list">
                     <template for:each={activeAppointments} for:item="appt">
-                        <li key={appt.Id} class="appointment-item" data-id={appt.Id} onclick={handleAppointmentClick} title="Editar cita">
+                        <li key={appt.Id} class="appointment-item" data-id={appt.Id} onclick={handleAppointmentClick}>
                             <div class="appt-time">{appt.displayLabel}</div>
                             <div class="appt-avatar" aria-hidden="true">{appt.initials}</div>
                             <div class="appt-info">
@@ -134,6 +134,8 @@
                                     <lightning-menu-item value="Completada" label="Completada"></lightning-menu-item>
                                     <lightning-menu-item value="No Asistió" label="No asistió"></lightning-menu-item>
                                     <lightning-menu-item value="Cancelada" label="Cancelar"></lightning-menu-item>
+                                    <lightning-menu-divider></lightning-menu-divider>
+                                    <lightning-menu-item value="Eliminar" label="Eliminar cita" icon-name="utility:delete" class="menu-delete"></lightning-menu-item>
                                 </lightning-button-menu>
                             </div>
                         </li>
@@ -150,7 +152,7 @@
         </section>
 
         <!-- Editar cita -->
-        <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleEditSuccess}></c-salon-appointment-edit-modal>
+        <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleEditSuccess} ondeleted={handleAppointmentDeleted}></c-salon-appointment-edit-modal>
 
         <!-- Bajo stock -->
         <template lwc:if={showLowStockModal}>

@@ -296,6 +296,37 @@ public with sharing class SalonController {
         }
     }
 
+    // ─── Eliminar cita ────────────────────────────────────────────────────────
+
+    /**
+     * Elimina una cita y su ingreso por servicio (si estaba completada), para que el balance
+     * no siga contando un ingreso de una cita que ya no existe. Las ventas de productos
+     * vinculadas se conservan (su vínculo queda vacío). Todo va a la Papelera de reciclaje.
+     */
+    @AuraEnabled
+    public static void deleteAppointment(Id appointmentId) {
+        if (appointmentId == null) {
+            throw auraError('Falta indicar la cita a eliminar.');
+        }
+        List<Salon_Appointment__c> appointments = [
+            SELECT Id FROM Salon_Appointment__c WHERE Id = :appointmentId WITH SECURITY_ENFORCED
+        ];
+        if (appointments.isEmpty()) {
+            throw auraError('La cita ya no existe.');
+        }
+        List<Salon_Transaction__c> serviceIncomes = [
+            SELECT Id FROM Salon_Transaction__c
+            WHERE Related_Appointment__c = :appointmentId AND Category__c = 'Ingreso por Servicio'
+            WITH SECURITY_ENFORCED
+        ];
+        try {
+            Database.delete(serviceIncomes, AccessLevel.USER_MODE);
+            Database.delete(appointments, AccessLevel.USER_MODE);
+        } catch (DmlException e) {
+            throw auraError(e.getDmlMessage(0));
+        }
+    }
+
     // ─── Historial de Citas ───────────────────────────────────────────────────
 
     private static final Integer HISTORY_PAGE_SIZE = 15;

@@ -189,4 +189,15 @@ describe('c-salon-home', () => {
 
         expect($$(element, '.date-value').map(d => d.textContent)).toEqual(['01/07/2026', 'Sin visitas registradas']);
     });
+
+    it('"Eliminar cita" en el menú pide confirmación en lugar de cambiar el estado', async () => {
+        const element = await render();
+
+        $(element, 'lightning-button-menu').dispatchEvent(new CustomEvent('select', { detail: { value: 'Eliminar' } }));
+        await flushPromises();
+
+        expect(updateAppointmentStatus).not.toHaveBeenCalled();
+        const modal = $(element, 'c-salon-appointment-edit-modal');
+        expect(modal.shadowRoot.querySelector('.confirm-text').textContent).toContain('Cliente Ejemplo');
+    });
 });

@@ -532,4 +532,45 @@ private class SalonControllerTest {
         Assert.areEqual('Diabetes;Tiroides', result.Medical_Conditions__c);
         Assert.areEqual('Sesión 2 de 6', result.Treatment_Protocol__c);
     }
+
+    // ─── deleteAppointment ───────────────────────────────────────────────────
+
+    @IsTest
+    static void testDeleteAppointment_removesAppointmentAndItsServiceIncomeOnly() {
+        Salon_Client__c client = new Salon_Client__c(Full_Name__c = 'Paula Eliminar');
+        insert client;
+        Salon_Appointment__c appt = new Salon_Appointment__c(
+            Client__c = client.Id, Appointment_Date__c = DateTime.now().addDays(-2), Status__c = 'Completada',
+            Total_Amount__c = 20000, Amount_Paid__c = 20000, Payment_Method__c = 'Efectivo'
+        );
+        insert appt;
+        Salon_Transaction__c productSale = new Salon_Transaction__c(
+            Transaction_Type__c = 'Ingreso', Category__c = 'Venta de Producto', Amount__c = 5000,
+            Transaction_Date__c = Date.today(), Related_Appointment__c = appt.Id
+        );
+        insert productSale;
+        Assert.areEqual(1, [SELECT COUNT() FROM Salon_Transaction__c WHERE Related_Appointment__c = :appt.Id AND Category__c = 'Ingreso por Servicio']);
+
+        Test.startTest();
+        SalonController.deleteAppointment(appt.Id);
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM Salon_Appointment__c WHERE Id = :appt.Id]);
+        Assert.areEqual(0, [SELECT COUNT() FROM Salon_Transaction__c WHERE Category__c = 'Ingreso por Servicio' AND Description__c LIKE '%Paula Eliminar%']);
+        Salon_Transaction__c keptSale = [SELECT Related_Appointment__c FROM Salon_Transaction__c WHERE Id = :productSale.Id];
+        Assert.isNull(keptSale.Related_Appointment__c, 'La venta de producto se conserva, sin vínculo a la cita');
+        Assert.areEqual(0, [SELECT Total_Visits__c FROM Salon_Client__c WHERE Id = :client.Id].Total_Visits__c);
+    }
+
+    @IsTest
+    static void testDeleteAppointment_alreadyDeleted_explainsInSpanish() {
+        Salon_Appointment__c appt = [SELECT Id FROM Salon_Appointment__c WHERE Status__c = 'Programada' LIMIT 1];
+        delete appt;
+        try {
+            SalonController.deleteAppointment(appt.Id);
+            Assert.fail('Debe avisar que la cita ya no existe');
+        } catch (AuraHandledException e) {
+            Assert.areEqual('La cita ya no existe.', e.getMessage());
+        }
+    }
 }
