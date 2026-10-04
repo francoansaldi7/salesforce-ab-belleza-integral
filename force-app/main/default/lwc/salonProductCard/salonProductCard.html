@@ -33,15 +33,15 @@
         </div>
 
         <!-- Upload area: lightning-file-upload handles the Salesforce Files upload automatically.
-             record-id links the uploaded file to this product record. multiple="false" enforces one at a time. -->
+             record-id links the uploaded file to this product record. Omitting `multiple` keeps it to one file
+             (multiple="false" would pass the truthy string "false" and allow several). -->
         <div class="upload-area">
             <lightning-file-upload
                 label="Subir imagen"
                 name="productImage"
                 accept={acceptedFormats}
                 record-id={recordId}
-                onuploadfinished={handleUploadFinished}
-                multiple="false">
+                onuploadfinished={handleUploadFinished}>
             </lightning-file-upload>
             <p class="upload-hint">JPG, PNG, GIF, WEBP o BMP. La imagen anterior se mantiene en los archivos del registro.</p>
         </div>

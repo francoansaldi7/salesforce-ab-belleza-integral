@@ -573,4 +573,37 @@ private class SalonControllerTest {
             Assert.areEqual('La cita ya no existe.', e.getMessage());
         }
     }
+
+    // ─── getProductImageVersionId: con archivos ──────────────────────────────
+
+    @IsTest
+    static void testGetProductImageVersionId_returnsTheImageVersion() {
+        Salon_Product__c prod = [SELECT Id FROM Salon_Product__c WHERE Name = 'Tinte Rubio' LIMIT 1];
+        ContentVersion image = new ContentVersion(
+            Title = 'foto-producto', PathOnClient = 'foto-producto.png',
+            VersionData = Blob.valueOf('imagen de prueba'), FirstPublishLocationId = prod.Id
+        );
+        insert image;
+
+        Test.startTest();
+        String result = SalonController.getProductImageVersionId(prod.Id);
+        Test.stopTest();
+
+        Assert.areEqual(image.Id, result);
+    }
+
+    @IsTest
+    static void testGetProductImageVersionId_ignoresNonImageFiles() {
+        Salon_Product__c prod = [SELECT Id FROM Salon_Product__c WHERE Name = 'Tinte Rubio' LIMIT 1];
+        insert new ContentVersion(
+            Title = 'ficha-tecnica', PathOnClient = 'ficha-tecnica.pdf',
+            VersionData = Blob.valueOf('documento de prueba'), FirstPublishLocationId = prod.Id
+        );
+
+        Test.startTest();
+        String result = SalonController.getProductImageVersionId(prod.Id);
+        Test.stopTest();
+
+        Assert.isNull(result, 'Un PDF adjunto no debe usarse como imagen del producto');
+    }
 }

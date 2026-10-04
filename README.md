@@ -68,7 +68,7 @@ force-app/main/default/
 ├── applications/AB_Belleza_Integral.app-meta.xml
 ├── classes/
 │   ├── SalonController.cls          # Dashboard, history, client card and product image queries; status updates
-│   ├── SalonControllerTest.cls      # 29 tests
+│   ├── SalonControllerTest.cls      # 31 tests
 │   └── SalonAutomationTest.cls      # 11 tests covering the record-triggered flows
 ├── flows/                           # 3 guided wizards + 4 record-triggered automations
 ├── lwc/
@@ -126,23 +126,25 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 
 ## Testing
 
-**Apex**: 40 tests. They cover every controller method and every record-triggered flow:
+**Apex**: 42 tests, with **97% coverage** of `SalonController`. They cover every controller method and every record-triggered flow:
 - one income per appointment: no duplicates, removal on cancel, creation when an appointment is created already completed
 - double-booking prevention, and that a cancelled appointment frees its slot
 - the VIP thresholds
 - monthly totals with more than 200 transactions
 - history filters, summary, sorting and paging
 - deleting an appointment together with its service income only
+- product image lookup: latest image attached, non-image files ignored
 
 ```bash
 sf apex run test --class-names SalonControllerTest --class-names SalonAutomationTest --code-coverage --result-format human --target-org salonOrg
 ```
 
-**LWC (Jest)**: 42 tests:
+**LWC (Jest)**: 47 tests, covering every component:
 - **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history, and the stock and inactive-client details
 - **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, and arriving pre-filtered from a client file
 - **Client file:** contact links, the health section, stats and the history link
 - **Edit window:** editing, plus delete with confirmation, cancel and retry on failure
+- **Product card:** image, empty and error states, upload settings, and showing the new photo right after an upload
 - **Helpers:** Argentine WhatsApp formats, Instagram parsing and formatting
 
 ```bash
