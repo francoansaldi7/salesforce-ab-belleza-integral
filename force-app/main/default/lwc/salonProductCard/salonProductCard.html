@@ -1,50 +1,49 @@
 <!--
-  @description  Tarjeta de imagen para Salon_Product__c.
-                Muestra la imagen del producto y permite subir o reemplazar
-                la foto directamente desde la página del registro.
+  Tarjeta de imagen para Salon_Product__c: muestra la foto del producto y permite
+  subir o reemplazarla directamente desde la página del registro.
 -->
 <template>
-    <div class="product-image-card">
+    <article class="ab-card product-image-card">
 
-        <div class="card-header">
-            <lightning-icon icon-name="utility:image" size="x-small" class="header-icon"></lightning-icon>
-            <span class="card-title">Imagen del Producto</span>
-        </div>
+        <header class="card-header">
+            <span class="header-icon-wrap"><lightning-icon icon-name="utility:image" size="x-small" class="header-icon"></lightning-icon></span>
+            <h2 class="card-title">Imagen del producto</h2>
+        </header>
 
-        <!-- Image display area: three states — loading, image found, no image yet -->
+        <!-- Tres estados: cargando, con imagen, sin imagen -->
         <div class="image-area">
-            <!-- Loading spinner while the Apex call fetches the ContentVersionId -->
             <template lwc:if={isLoading}>
                 <div class="placeholder">
-                    <lightning-spinner size="medium" alternative-text="Cargando imagen..."></lightning-spinner>
+                    <div class="ab-loader" role="status" aria-label="Cargando imagen"></div>
                 </div>
             </template>
-            <!-- Image found: render the file using the Salesforce content download servlet URL -->
             <template lwc:elseif={imageUrl}>
-                <img class="product-img" src={imageUrl} alt="Imagen del producto" />
+                <div class="image-frame">
+                    <img class="product-img" src={imageUrl} alt="Imagen del producto" />
+                </div>
             </template>
-            <!-- No image attached yet: show a placeholder icon -->
             <template lwc:else>
-                <div class="placeholder">
-                    <lightning-icon icon-name="utility:image" size="large" class="placeholder-icon"></lightning-icon>
+                <div class="placeholder placeholder--empty">
+                    <span class="placeholder-icon-wrap"><lightning-icon icon-name="utility:image" size="small" class="placeholder-icon"></lightning-icon></span>
                     <p class="placeholder-text">Sin imagen</p>
+                    <p class="placeholder-hint">Subí una foto para reconocer el producto de un vistazo.</p>
                 </div>
             </template>
         </div>
 
-        <!-- Upload area: lightning-file-upload handles the Salesforce Files upload automatically.
-             record-id links the uploaded file to this product record. Omitting `multiple` keeps it to one file
-             (multiple="false" would pass the truthy string "false" and allow several). -->
+        <!-- record-id vincula el archivo al producto. Sin el atributo `multiple` se sube un archivo a la vez
+             (multiple="false" pasaría el texto "false", que cuenta como verdadero, y permitiría varios). -->
         <div class="upload-area">
             <lightning-file-upload
                 label="Subir imagen"
                 name="productImage"
                 accept={acceptedFormats}
                 record-id={recordId}
-                onuploadfinished={handleUploadFinished}>
+                onuploadfinished={handleUploadFinished}
+                class="uploader">
             </lightning-file-upload>
-            <p class="upload-hint">JPG, PNG, GIF, WEBP o BMP. La imagen anterior se mantiene en los archivos del registro.</p>
+            <p class="upload-hint">JPG, PNG, GIF, WEBP o BMP. La imagen anterior se conserva en los archivos del producto.</p>
         </div>
 
-    </div>
+    </article>
 </template>

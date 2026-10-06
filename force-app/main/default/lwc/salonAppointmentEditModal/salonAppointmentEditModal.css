@@ -20,14 +20,6 @@
     .form-grid { grid-template-columns: 1fr; }
 }
 
-/* Botón Guardar con la paleta del salón */
-.save-btn {
-    --slds-c-button-brand-color-background:        var(--ab-sage-dark);
-    --slds-c-button-brand-color-border:            var(--ab-sage-dark);
-    --slds-c-button-brand-color-background-hover:  var(--ab-sage-deep);
-    --slds-c-button-brand-color-border-hover:      var(--ab-sage-deep);
-    --slds-c-button-radius-border:                 9px;
-}
 
 .footer-spacer { flex: 1; }
 

@@ -11,7 +11,7 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 ## Features
 
 ### Design
-A custom visual identity taken from the salon's logo: **sage and cream**, warm charcoal text and **elegant serif headings**. It's shared by every component through one CSS module (`salonStyles`), with themed loading states and a responsive layout for phones and tablets.
+A custom visual identity taken from the salon's logo: **sage and cream**, warm charcoal text and **elegant serif headings**. Every component shares it through one CSS module (`salonStyles`), along with themed loading states and a responsive layout for phones and tablets. The module also sets Salesforce's theme variables (`--lwc-brand*` and the button styling hooks), so the base components used *inside* the app share the palette: the wizards' buttons, the edit form, dropdowns and menus.
 
 ### Dashboard (`salonHome`)
 - **Today's appointments** and **upcoming appointments**. Each row shows a time chip, the client's initials, **VIP** and **ALERGIA** badges (the allergy note shows on hover), service tags, the amount paid and a status pill.
@@ -139,12 +139,12 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 sf apex run test --class-names SalonControllerTest --class-names SalonAutomationTest --code-coverage --result-format human --target-org salonOrg
 ```
 
-**LWC (Jest)**: 47 tests, covering every component:
+**LWC (Jest)**: 48 tests, covering every component:
 - **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history, and the stock and inactive-client details
 - **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, and arriving pre-filtered from a client file
 - **Client file:** contact links, the health section, stats and the history link
 - **Edit window:** editing, plus delete with confirmation, cancel and retry on failure
-- **Product card:** image, empty and error states, upload settings, and showing the new photo right after an upload
+- **Product card:** loading, image, empty and error states, upload settings, and showing the new photo right after an upload
 - **Helpers:** Argentine WhatsApp formats, Instagram parsing and formatting
 
 ```bash

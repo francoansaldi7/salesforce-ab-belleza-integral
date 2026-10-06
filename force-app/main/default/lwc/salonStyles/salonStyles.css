@@ -23,6 +23,27 @@
     --ab-sans:        'Salesforce Sans', -apple-system, 'Segoe UI', Arial, sans-serif;
     --ab-transition:  0.16s ease;
 
+    /* Retint Salesforce's own components rendered inside the app (wizard buttons, edit form,
+       dropdowns, the status menu chevron, focus rings). These custom properties inherit
+       through shadow DOM, so they also reach nested base components and screen flows. */
+    --lwc-brandAccessible:                         var(--ab-sage-dark);
+    --lwc-brandAccessibleActive:                   var(--ab-sage-deep);
+    --lwc-brandPrimary:                            var(--ab-sage);
+    --lwc-colorBorderInputActive:                  var(--ab-sage);
+    --lwc-colorBorderSelection:                    var(--ab-sage);
+    --lwc-colorTextLink:                           var(--ab-sage-dark);
+    --lwc-colorTextLinkHover:                      var(--ab-sage-deep);
+    --lwc-colorBackgroundSelection:                var(--ab-sage-mist);
+    --slds-c-button-brand-color-background:        var(--ab-sage-dark);
+    --slds-c-button-brand-color-border:            var(--ab-sage-dark);
+    --slds-c-button-brand-color-background-hover:  var(--ab-sage-deep);
+    --slds-c-button-brand-color-border-hover:      var(--ab-sage-deep);
+    --slds-c-button-brand-color-background-active: var(--ab-sage-deep);
+    --slds-c-button-brand-color-border-active:     var(--ab-sage-deep);
+    --slds-c-button-text-color:                    var(--ab-sage-deep);
+    --slds-c-button-text-color-hover:              var(--ab-sage-deep);
+    --slds-c-button-radius-border:                 9px;
+
     display:     block;
     color:       var(--ab-ink);
     font-family: var(--ab-sans);

@@ -16,6 +16,17 @@ async function render() {
 }
 
 describe('c-salon-product-card', () => {
+    it('muestra el cargador del salón mientras busca la imagen', async () => {
+        getProductImageVersionId.mockReturnValue(new Promise(() => {}));
+        const element = createElement('c-salon-product-card', { is: SalonProductCard });
+        element.recordId = 'p01';
+        document.body.appendChild(element);
+        await Promise.resolve();
+
+        expect($(element, '.ab-loader')).not.toBeNull();
+        expect($(element, 'lightning-spinner')).toBeNull();
+    });
+
     afterEach(() => {
         while (document.body.firstChild) {
             document.body.removeChild(document.body.firstChild);
@@ -46,7 +57,7 @@ describe('c-salon-product-card', () => {
         getProductImageVersionId.mockRejectedValue({ body: { message: 'error' } });
         const element = await render();
 
-        expect($(element, 'lightning-spinner')).toBeNull();
+        expect($(element, '.ab-loader')).toBeNull();
         expect($(element, '.placeholder-text').textContent).toBe('Sin imagen');
     });
 

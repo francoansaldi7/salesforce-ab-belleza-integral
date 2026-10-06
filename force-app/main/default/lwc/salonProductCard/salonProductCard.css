@@ -1,90 +1,132 @@
-:host {
-    --salon-pink:       #0d9668;
-    --salon-pink-light: #e6f9f2;
-    --salon-dark:       #1a1a2e;
-    --salon-gray:       #6b7280;
-    --radius:           12px;
-    --shadow:           0 2px 8px rgba(0,0,0,0.08);
-}
+@import 'c/salonStyles';
 
 .product-image-card {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
     overflow: hidden;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────── */
+/* ── Encabezado ─────────────────────────────────────────────────────────── */
 .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.9rem 1.25rem;
-    background: var(--salon-pink-light);
-    border-bottom: 1px solid #a7f3d0;
+    display:       flex;
+    align-items:   center;
+    gap:           0.6rem;
+    padding:       0.85rem 1.25rem;
+    background:    var(--ab-sage-mist);
+    border-bottom: 1px solid var(--ab-line);
 }
 
-.header-icon {
-    --lwc-colorTextIconDefault: var(--salon-pink);
+.header-icon-wrap {
+    width:           30px;
+    height:          30px;
+    border-radius:   50%;
+    background:      var(--ab-surface);
+    border:          1px solid var(--ab-line);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
 }
+
+.header-icon { --slds-c-icon-color-foreground-default: var(--ab-sage-dark); }
 
 .card-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--salon-dark);
+    margin:      0;
+    font-family: var(--ab-serif);
+    font-size:   1.3rem;
+    font-weight: 600;
+    color:       var(--ab-sage-deep);
 }
 
-/* ── Image area ──────────────────────────────────────────────────────────── */
+/* ── Imagen ─────────────────────────────────────────────────────────────── */
 .image-area {
-    width: 100%;
-    min-height: 220px;
-    display: flex;
-    align-items: center;
+    display:         flex;
+    align-items:     center;
     justify-content: center;
-    background: #f0faf6;
+    min-height:      230px;
+    padding:         1.1rem;
+    background:      var(--ab-ivory);
+}
+
+.image-frame {
+    width:         100%;
+    padding:       0.6rem;
+    border-radius: var(--ab-radius-sm);
+    background:    var(--ab-surface);
+    border:        1px solid var(--ab-line);
+    box-shadow:    var(--ab-shadow);
 }
 
 .product-img {
-    width: 100%;
-    max-height: 340px;
-    object-fit: contain;
-    display: block;
+    display:       block;
+    width:         100%;
+    max-height:    340px;
+    object-fit:    contain;
+    border-radius: 6px;
 }
 
-/* ── Placeholder ─────────────────────────────────────────────────────────── */
+/* ── Sin imagen / cargando ──────────────────────────────────────────────── */
 .placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
     justify-content: center;
-    gap: 0.75rem;
-    padding: 2.5rem 1rem;
-    color: var(--salon-gray);
-    min-height: 220px;
-    width: 100%;
+    gap:             0.35rem;
+    width:           100%;
+    min-height:      200px;
+    text-align:      center;
 }
 
-.placeholder-icon {
-    --lwc-colorTextIconDefault: #d1d5db;
+.placeholder--empty {
+    border:        1.5px dashed var(--ab-sage-light);
+    border-radius: var(--ab-radius-sm);
+    background:    var(--ab-surface);
+    padding:       1.5rem 1rem;
 }
+
+.placeholder-icon-wrap {
+    width:           48px;
+    height:          48px;
+    border-radius:   50%;
+    background:      var(--ab-sage-mist);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    margin-bottom:   0.25rem;
+}
+
+.placeholder-icon { --slds-c-icon-color-foreground-default: var(--ab-sage); }
 
 .placeholder-text {
-    font-size: 0.875rem;
-    color: #9ca3af;
-    margin: 0;
+    margin:      0;
+    font-family: var(--ab-serif);
+    font-size:   1.2rem;
+    color:       var(--ab-sage-deep);
 }
 
-/* ── Upload area ─────────────────────────────────────────────────────────── */
+.placeholder-hint {
+    margin:    0;
+    font-size: 0.8rem;
+    color:     var(--ab-muted);
+}
+
+/* ── Subida ─────────────────────────────────────────────────────────────── */
 .upload-area {
-    padding: 1rem 1.25rem;
-    border-top: 1px solid #f3f4f6;
-    background: white;
+    padding:    0.9rem 1.25rem 1rem;
+    border-top: 1px solid var(--ab-line);
+}
+
+/* lightning-file-upload con la paleta del salón (styling hooks de SLDS) */
+.uploader {
+    --slds-c-button-neutral-color-background:       var(--ab-surface);
+    --slds-c-button-neutral-color-border:           var(--ab-sage);
+    --slds-c-button-text-color:                     var(--ab-sage-deep);
+    --slds-c-button-neutral-color-background-hover: var(--ab-sage-mist);
+    --slds-c-button-neutral-color-border-hover:     var(--ab-sage-dark);
+    --slds-c-button-radius-border:                  9px;
+    --slds-c-icon-color-foreground-default:         var(--ab-sage-dark);
 }
 
 .upload-hint {
-    margin: 0.4rem 0 0;
-    font-size: 0.72rem;
-    color: var(--salon-gray);
+    margin:      0.45rem 0 0;
+    font-size:   0.74rem;
     line-height: 1.4;
+    color:       var(--ab-muted);
 }
