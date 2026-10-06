@@ -6,6 +6,15 @@
 // automáticamente vía el flujo Cita_Crear_Transaccion), citas de hoy y próximas, gastos y ventas.
 // Las fechas son relativas a hoy.
 
+// ─── Seguridad ────────────────────────────────────────────────────────────────
+// Se niega a correr en una org que ya tiene clientes (por ejemplo, la org productiva del salón).
+class SeedSafetyException extends Exception {}
+Integer existingClients = [SELECT COUNT() FROM Salon_Client__c];
+if (existingClients > 0) {
+    throw new SeedSafetyException('Esta org ya tiene ' + existingClients
+        + ' clientes: los datos de ejemplo solo se cargan en una org vacía de prueba. No se modificó nada.');
+}
+
 // ─── Servicios ────────────────────────────────────────────────────────────────
 List<Salon_Service__c> services = new List<Salon_Service__c>{
     new Salon_Service__c(Name = 'Corte de Cabello',   Category__c = 'Cabello',    Price__c = 18000, Duration_Minutes__c = 45, Is_Active__c = true),
