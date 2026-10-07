@@ -73,6 +73,26 @@ describe('c-salon-history', () => {
         expect($(element, '.summary-billed').textContent.replace(/\s/g, ' ')).toBe('$ 74.000,00');
     });
 
+    it('debajo de la lista muestra el gráfico por estado con los mismos filtros', async () => {
+        const element = await render();
+
+        const chart = $(element, 'c-salon-status-chart');
+        expect(chart.counts).toEqual({ Completada: 1, Cancelada: 1 });
+        expect(chart.selectedStatuses).toEqual([]);
+        expect($(element, '.list-card + c-salon-status-chart')).not.toBeNull();
+    });
+
+    it('tocar un estado en el gráfico filtra la lista como los chips', async () => {
+        const element = await render();
+
+        $(element, 'c-salon-status-chart').dispatchEvent(new CustomEvent('statustoggle', { detail: { status: 'Cancelada' } }));
+        await flushPromises();
+
+        expect(getAppointmentHistory.mock.calls[1][0].statuses).toEqual(['Cancelada']);
+        expect($(element, 'c-salon-status-chart').selectedStatuses).toEqual(['Cancelada']);
+        expect($(element, '[data-status="Cancelada"]').getAttribute('aria-pressed')).toBe('true');
+    });
+
     it('lista cada cita con clienta, VIP, servicios, estado y monto', async () => {
         const element = await render();
 

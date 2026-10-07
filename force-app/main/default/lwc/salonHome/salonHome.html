@@ -16,15 +16,21 @@
 
         <!-- Indicadores -->
         <div class="kpi-grid">
-            <button class="kpi-tile kpi-income kpi-tile--clickable" onclick={handleBalanceTileClick} title="Ver historial de balances">
-                <span class="kpi-icon"><lightning-icon icon-name="utility:moneybag" size="x-small"></lightning-icon></span>
-                <span class="kpi-tile__label">Balance mensual</span>
-                <span class="kpi-tile__value">
-                    <template lwc:if={isLoadingKpis}><span class="ab-skeleton" aria-label="Cargando"></span></template>
-                    <template lwc:else><span class={monthlyBalanceClass}>{monthlyBalanceFormatted}</span></template>
-                </span>
-                <span class="kpi-tile__hint">Ver historial ›</span>
-            </button>
+            <div class="kpi-tile-wrap">
+                <button class="kpi-tile kpi-income kpi-tile--clickable" onclick={handleBalanceTileClick} title="Ver historial de balances">
+                    <span class="kpi-icon"><lightning-icon icon-name="utility:moneybag" size="x-small"></lightning-icon></span>
+                    <span class="kpi-tile__label">Balance mensual</span>
+                    <span class="kpi-tile__value">
+                        <template lwc:if={isLoadingKpis}><span class="ab-skeleton" aria-label="Cargando"></span></template>
+                        <template lwc:else><span class={monthlyBalanceClass}>{monthlyBalanceFormatted}</span></template>
+                    </span>
+                    <span class="kpi-tile__hint">Ver historial ›</span>
+                </button>
+                <button class="kpi-chart-btn" onclick={handleBalanceChartClick} title="Ver gráfico de ingresos y gastos"
+                    aria-label="Ver gráfico de ingresos y gastos">
+                    <lightning-icon icon-name="utility:chart" size="x-small"></lightning-icon>
+                </button>
+            </div>
 
             <div class="kpi-tile kpi-appointments">
                 <span class="kpi-icon"><lightning-icon icon-name="utility:event" size="x-small"></lightning-icon></span>
@@ -262,7 +268,24 @@
                                 </div>
                             </div>
 
-                            <template lwc:if={hasBalanceTransactions}>
+                            <div class="balance-view-toggle" role="group" aria-label="Vista del balance">
+                                <button class={balanceChartBtnClass} data-view="chart" onclick={handleBalanceViewToggle}
+                                    aria-pressed={balanceChartPressed}>
+                                    <lightning-icon icon-name="utility:chart" size="xx-small" class="toggle-icon"></lightning-icon>
+                                    Gráfico
+                                </button>
+                                <button class={balanceListBtnClass} data-view="list" onclick={handleBalanceViewToggle}
+                                    aria-pressed={balanceListPressed}>
+                                    <lightning-icon icon-name="utility:list" size="xx-small" class="toggle-icon"></lightning-icon>
+                                    Movimientos
+                                </button>
+                            </div>
+
+                            <template lwc:if={isBalanceChartView}>
+                                <c-salon-balance-chart income={chartIncome} expenses={chartExpenses}
+                                    categories={chartCategories}></c-salon-balance-chart>
+                            </template>
+                            <template lwc:elseif={hasBalanceTransactions}>
                                 <ul class="modal-list">
                                     <template for:each={balanceTransactions} for:item="tx">
                                         <li key={tx.Id} class="modal-list-item">

@@ -325,6 +325,30 @@ private class SalonControllerTest {
         Assert.areEqual(3,    result.transactions.size(), 'Should return all three transactions');
     }
 
+    /** The chart breakdown groups the month's totals by type and category, largest first. */
+    @IsTest
+    static void testGetMonthlyBalanceDetail_returnsTotalsByCategory() {
+        insert new Salon_Transaction__c(
+            Transaction_Type__c = 'Gasto', Category__c = 'Marketing', Amount__c = 450, Transaction_Date__c = Date.today()
+        );
+
+        Test.startTest();
+        SalonController.MonthlyBalanceDetail result =
+            SalonController.getMonthlyBalanceDetail(Date.today().year(), Date.today().month());
+        Test.stopTest();
+
+        Map<String, Decimal> totals = new Map<String, Decimal>();
+        for (SalonController.CategoryTotal c : result.categories) {
+            totals.put(c.type + '|' + c.category, c.total);
+        }
+        Assert.areEqual(3, result.categories.size(), 'One entry per type and category');
+        Assert.areEqual(2000, totals.get('Ingreso|Ingreso por Servicio'), 'Manual and automatic service income are added up');
+        Assert.areEqual(450, totals.get('Gasto|Marketing'), 'Marketing expense');
+        Assert.areEqual(300, totals.get('Gasto|Insumos'), 'Supplies expense');
+        Assert.areEqual('Ingreso por Servicio', result.categories[0].category, 'Sorted by amount, largest first');
+        Assert.areEqual(750, result.expenses, 'Expense total still includes every category');
+    }
+
     @IsTest
     static void testGetMonthlyBalanceDetail_emptyMonth_returnsZeros() {
         // Use a future month guaranteed to have no transactions

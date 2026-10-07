@@ -225,7 +225,15 @@ export default class SalonHistory extends NavigationMixin(LightningElement) {
     // ── Filtros ───────────────────────────────────────────────────────────────
 
     handleStatusToggle(event) {
-        const status = event.currentTarget.dataset.status;
+        this.toggleStatus(event.currentTarget.dataset.status);
+    }
+
+    // La leyenda del gráfico filtra igual que los chips de estado.
+    handleChartStatusToggle(event) {
+        this.toggleStatus(event.detail.status);
+    }
+
+    toggleStatus(status) {
         this.selectedStatuses = this.selectedStatuses.includes(status)
             ? this.selectedStatuses.filter(s => s !== status)
             : [...this.selectedStatuses, status];

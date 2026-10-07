@@ -17,7 +17,7 @@ A custom visual identity taken from the salon's logo: **sage and cream**, warm c
 - **Today's appointments** and **upcoming appointments**. Each row shows a time chip, the client's initials, **VIP** and **ALERGIA** badges (the allergy note shows on hover), service tags, the amount paid and a status pill.
 - **One-click status changes** (Confirmada, En Progreso, Completada, No Asistió, Cancelada), an **edit window** for any appointment, and **delete with confirmation**. Deleting also removes the appointment's service income from the balance, and the record stays recoverable from the Recycle Bin for 15 days.
 - **KPI tiles:**
-  - Monthly balance, which opens a **month-by-month history** of income, expenses and transactions
+  - Monthly balance, which opens a **month-by-month history** of income, expenses and transactions. Its chart icon opens the same window on an **income vs. expenses chart**: two bars scaled against each other, each split by category, with hover details and a one-line summary of the month's profit or loss.
   - Open appointments
   - **Low-stock products**
   - **Inactive clients** (no visit in 60 days)
@@ -46,6 +46,7 @@ A custom visual identity taken from the salon's logo: **sage and cream**, warm c
   - client search, debounced
 - **Summary strip** for the current filter: total appointments, completed, cancelled, no-shows, and the **amount billed** (amount paid on completed appointments)
 - **Sorting:** newest or oldest first, 15 per page
+- **Status chart** under the list: a donut in the same colors as the status pills, showing the split for the current filters. Hovering a slice shows its count and share, and clicking a legend entry filters the list, like the status chips.
 - Clicking a row **edits the appointment**; clicking the client's name opens **her client file**.
 
 ### Client file (`salonClientCard`, on the client record page)
@@ -68,12 +69,14 @@ force-app/main/default/
 ├── applications/AB_Belleza_Integral.app-meta.xml
 ├── classes/
 │   ├── SalonController.cls          # Dashboard, history, client card and product image queries; status updates
-│   ├── SalonControllerTest.cls      # 31 tests
+│   ├── SalonControllerTest.cls      # 32 tests
 │   └── SalonAutomationTest.cls      # 11 tests covering the record-triggered flows
 ├── flows/                           # 3 guided wizards + 4 record-triggered automations
 ├── lwc/
 │   ├── salonHome/                   # Dashboard
 │   ├── salonHistory/                # Historial tab
+│   ├── salonStatusChart/            # Status donut chart (Historial)
+│   ├── salonBalanceChart/           # Income vs. expenses chart (balance window)
 │   ├── salonClientCard/             # Client file (record page)
 │   ├── salonAppointmentEditModal/   # Shared "edit appointment" window
 │   ├── salonProductCard/            # Product photo card
@@ -100,7 +103,8 @@ scripts/apex/seed-sample-data.apex   # Optional fictional demo data
 
 ### Design decisions
 - **Declarative automation, versioned:** business rules live in Flows so the salon owner's day-to-day behavior can be changed and **rolled back in one click** by reactivating a previous flow version. Apex is reserved for the dashboard's read-heavy queries.
-- **Totals over every record:** the monthly balance history sums *all* of a month's transactions with an aggregate query. Only the visible list is capped (at 200 rows).
+- **Totals over every record:** the monthly balance history and its chart sum *all* of a month's transactions with an aggregate query (by type and category). Only the visible list is capped (at 200 rows).
+- **Charts without libraries:** both charts are hand-built SVG and CSS, so nothing external is loaded into the org and they share the app's palette.
 - **Timezone-safe dates:** date-only fields are formatted by splitting the `YYYY-MM-DD` string instead of parsing it with `new Date()`, which would shift dates back a day in UTC-3 (Argentina).
 - **Security:** every Apex query uses `WITH SECURITY_ENFORCED`, so field-level security is respected. Status updates are validated against an allow-list.
 
@@ -129,11 +133,11 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 
 ## Testing
 
-**Apex**: 42 tests, with **97% coverage** of `SalonController`. They cover every controller method and every record-triggered flow:
+**Apex**: 43 tests, with **96% coverage** of `SalonController`. They cover every controller method and every record-triggered flow:
 - one income per appointment: no duplicates, removal on cancel, creation when an appointment is created already completed
 - double-booking prevention, and that a cancelled appointment frees its slot
 - the VIP thresholds
-- monthly totals with more than 200 transactions
+- monthly totals with more than 200 transactions, and the per-category totals behind the balance chart
 - history filters, summary, sorting and paging
 - deleting an appointment together with its service income only
 - product image lookup: latest image attached, non-image files ignored
@@ -142,9 +146,10 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 sf apex run test --class-names SalonControllerTest --class-names SalonAutomationTest --code-coverage --result-format human --target-org salonOrg
 ```
 
-**LWC (Jest)**: 48 tests, covering every component:
-- **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history, and the stock and inactive-client details
-- **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, and arriving pre-filtered from a client file
+**LWC (Jest)**: 62 tests, covering every component:
+- **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history and its chart view, and the stock and inactive-client details
+- **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, arriving pre-filtered from a client file, and filtering from the status chart
+- **Charts:** slices and bars sized from the data, legends with counts and percentages, hover details, empty states, and the profit/loss summary
 - **Client file:** contact links, the health section, stats and the history link
 - **Edit window:** editing, plus delete with confirmation, cancel and retry on failure
 - **Product card:** loading, image, empty and error states, upload settings, and showing the new photo right after an upload

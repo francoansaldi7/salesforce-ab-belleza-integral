@@ -1,0 +1,49 @@
+<template>
+    <div class="balance-chart">
+        <template lwc:if={hasData}>
+            <div class="bars">
+                <template for:each={rows} for:item="row">
+                    <div key={row.type} class={row.className}>
+                        <div class="bar-head">
+                            <span class="bar-label">{row.label}</span>
+                            <span class="bar-amount">{row.amount}</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style={row.fillStyle}>
+                                <template for:each={row.segments} for:item="segment">
+                                    <span key={segment.key} class={segment.segmentClass} style={segment.segmentStyle}
+                                        data-key={segment.key} title={segment.detail}
+                                        onmouseenter={handleEnter} onmouseleave={handleLeave}></span>
+                                </template>
+                            </div>
+                        </div>
+                        <template lwc:if={row.hasSegments}>
+                            <ul class="legend">
+                                <template for:each={row.segments} for:item="segment">
+                                    <li key={segment.key} class={segment.legendClass} data-key={segment.key}
+                                        onmouseenter={handleEnter} onmouseleave={handleLeave}>
+                                        <span class="swatch" style={segment.swatchStyle}></span>
+                                        <span class="legend-label">{segment.category}</span>
+                                        <span class="legend-amount">{segment.amount}</span>
+                                        <span class="legend-percent">{segment.percent}</span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                        <template lwc:else>
+                            <p class="bar-empty">Sin movimientos.</p>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <div class="detail" aria-live="polite">
+                <template lwc:if={hoveredDetail}>{hoveredDetail}</template>
+                <template lwc:else><span class={insight.className}>{insight.text}</span></template>
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="ab-empty">No hay movimientos registrados en este mes.</div>
+        </template>
+    </div>
+</template>

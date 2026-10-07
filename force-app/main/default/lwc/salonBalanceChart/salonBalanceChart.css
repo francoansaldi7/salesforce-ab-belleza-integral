@@ -1,0 +1,115 @@
+@import 'c/salonStyles';
+
+.bars {
+    display:        flex;
+    flex-direction: column;
+    gap:            1.4rem;
+}
+
+.bar-head {
+    display:         flex;
+    justify-content: space-between;
+    align-items:     baseline;
+    margin-bottom:   0.4rem;
+}
+
+.bar-label {
+    font-size:      0.72rem;
+    font-weight:    700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color:          var(--ab-muted);
+}
+
+.bar-amount {
+    font-family: var(--ab-serif);
+    font-size:   1.35rem;
+    font-weight: 600;
+}
+
+.bar-row--income .bar-amount  { color: #357149; }
+.bar-row--expense .bar-amount { color: var(--ab-danger); }
+
+.bar-track {
+    height:        34px;
+    border-radius: 10px;
+    background:    var(--ab-sage-mist);
+    overflow:      hidden;
+}
+
+.bar-fill {
+    display:       flex;
+    height:        100%;
+    gap:           2px;
+    border-radius: 10px;
+    overflow:      hidden;
+    transition:    width 0.5s ease;
+}
+
+.segment {
+    flex-basis: 0;
+    min-width:  3px;
+    height:     100%;
+    cursor:     pointer;
+    transition: opacity var(--ab-transition), filter var(--ab-transition);
+}
+
+.segment:hover   { filter: brightness(1.05); }
+.segment--dimmed { opacity: 0.35; }
+
+.legend {
+    list-style: none;
+    margin:     0.6rem 0 0;
+    padding:    0;
+    display:    flex;
+    flex-wrap:  wrap;
+    gap:        0.4rem;
+}
+
+.legend-item {
+    display:       flex;
+    align-items:   center;
+    gap:           0.45rem;
+    padding:       0.3rem 0.65rem;
+    border:        1px solid var(--ab-line);
+    border-radius: 9999px;
+    background:    var(--ab-surface);
+    font-size:     0.78rem;
+    cursor:        default;
+    transition:    background var(--ab-transition);
+}
+
+.legend-item--active,
+.legend-item:hover { background: var(--ab-sage-mist); }
+
+.swatch {
+    width:         10px;
+    height:        10px;
+    border-radius: 50%;
+    flex-shrink:   0;
+}
+
+.legend-label  { font-weight: 600; color: var(--ab-ink); }
+.legend-amount { color: var(--ab-sage-deep); }
+.legend-percent { color: var(--ab-muted); }
+
+.bar-empty {
+    margin:    0.5rem 0 0;
+    font-size: 0.78rem;
+    color:     var(--ab-muted);
+}
+
+.detail {
+    margin-top:    1.4rem;
+    padding:       0.75rem 1rem;
+    min-height:    2.9rem;
+    border-radius: var(--ab-radius-sm);
+    background:    var(--ab-ivory);
+    border:        1px solid var(--ab-line);
+    font-size:     0.85rem;
+    font-weight:   600;
+    color:         var(--ab-sage-deep);
+}
+
+.insight--positive { color: #357149; }
+.insight--negative { color: var(--ab-danger); }

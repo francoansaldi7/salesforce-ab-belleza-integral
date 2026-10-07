@@ -162,6 +162,31 @@ describe('c-salon-home', () => {
         const cards = $$(element, '.balance-card__value').map(v => v.textContent.replace(/\s/g, ' '));
         expect(cards).toEqual(['$ 300.000,00', '$ 50.000,00', '$ 250.000,00']);
         expect($$(element, '.tx-date').map(d => d.textContent)).toEqual(['01/10/2026', '02/10/2026']);
+        expect($(element, 'c-salon-balance-chart')).toBeNull();
+    });
+
+    it('el ícono de gráfico abre el balance directamente en el gráfico, y se puede pasar a los movimientos', async () => {
+        const categories = [{ type: 'Ingreso', category: 'Ingreso por Servicio', total: 300000 }];
+        getMonthlyBalanceDetail.mockResolvedValue({ income: 300000, expenses: 0, balance: 300000, categories, transactions: [] });
+        const element = await render();
+
+        $(element, '.kpi-chart-btn').click();
+        await flushPromises();
+
+        const chart = $(element, 'c-salon-balance-chart');
+        expect(chart.income).toBe(300000);
+        expect(chart.expenses).toBe(0);
+        expect(chart.categories).toEqual(categories);
+        expect($(element, '[data-view="chart"]').getAttribute('aria-pressed')).toBe('true');
+
+        $(element, '[data-view="list"]').click();
+        await flushPromises();
+        expect($(element, 'c-salon-balance-chart')).toBeNull();
+        expect($(element, '.balance-view-toggle + .ab-empty')).not.toBeNull();
+
+        $(element, '.ab-modal__close').click();
+        await flushPromises();
+        expect($(element, '.ab-modal--balance')).toBeNull();
     });
 
     it('carga los productos con bajo stock al abrir su detalle', async () => {

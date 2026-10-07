@@ -134,6 +134,12 @@
             </template>
         </section>
 
+        <!-- Gráfico por estado: mismos filtros que la lista -->
+        <template lwc:if={hasLoaded}>
+            <c-salon-status-chart counts={countByStatus} selected-statuses={selectedStatuses}
+                onstatustoggle={handleChartStatusToggle}></c-salon-status-chart>
+        </template>
+
         <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleSaved} ondeleted={handleSaved}></c-salon-appointment-edit-modal>
     </div>
 </template>

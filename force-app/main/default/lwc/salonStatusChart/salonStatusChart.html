@@ -1,0 +1,48 @@
+<template>
+    <section class="ab-card status-chart">
+        <header class="chart-header">
+            <div>
+                <h2 class="chart-title">Citas por estado</h2>
+                <p class="chart-subtitle">Según los filtros aplicados. Tocá un estado para filtrar la lista.</p>
+            </div>
+        </header>
+
+        <div class="chart-body">
+            <div class="donut-wrap">
+                <svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Distribución de citas por estado">
+                    <circle class="donut-track" cx="21" cy="21" r={radius}></circle>
+                    <template lwc:if={hasData}>
+                        <template for:each={slices} for:item="slice">
+                            <circle key={slice.status} class={slice.className} cx="21" cy="21" r={radius}
+                                stroke-dasharray={slice.dashArray} stroke-dashoffset={slice.dashOffset}
+                                data-status={slice.status} onmouseenter={handleEnter} onmouseleave={handleLeave}></circle>
+                        </template>
+                    </template>
+                </svg>
+                <div class="donut-center" aria-live="polite">
+                    <span class="donut-center__value">{centerValue}</span>
+                    <span class="donut-center__label">{centerLabel}</span>
+                    <span class="donut-center__percent">{centerPercent}</span>
+                </div>
+            </div>
+
+            <ul class="legend">
+                <template for:each={legend} for:item="item">
+                    <li key={item.status}>
+                        <button class={item.className} data-status={item.status} aria-pressed={item.ariaPressed} title={item.title}
+                            onclick={handleLegendClick} onmouseenter={handleEnter} onmouseleave={handleLeave}>
+                            <span class={item.swatchClass}></span>
+                            <span class="legend-label">{item.status}</span>
+                            <span class="legend-count">{item.count}</span>
+                            <span class="legend-percent">{item.percent}</span>
+                        </button>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
+        <template lwc:if={isEmpty}>
+            <p class="chart-empty">No hay citas con estos filtros.</p>
+        </template>
+    </section>
+</template>

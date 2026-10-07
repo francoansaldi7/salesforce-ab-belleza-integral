@@ -1,0 +1,171 @@
+@import 'c/salonStyles';
+
+.status-chart { padding: 1.1rem 1.25rem 1.25rem; }
+
+.chart-title {
+    margin:      0;
+    font-family: var(--ab-serif);
+    font-size:   1.35rem;
+    font-weight: 600;
+    color:       var(--ab-sage-deep);
+}
+
+.chart-subtitle {
+    margin:    0.15rem 0 0;
+    font-size: 0.78rem;
+    color:     var(--ab-muted);
+}
+
+.chart-body {
+    display:     flex;
+    align-items: center;
+    gap:         2rem;
+    margin-top:  1rem;
+}
+
+/* ── Anillo ─────────────────────────────────────────────────────────────── */
+.donut-wrap {
+    position:    relative;
+    flex-shrink: 0;
+    width:       210px;
+    height:      210px;
+}
+
+.donut {
+    width:     100%;
+    height:    100%;
+}
+
+.donut-track {
+    fill:         none;
+    stroke:       var(--ab-sage-mist);
+    stroke-width: 5;
+}
+
+.slice {
+    fill:         none;
+    stroke-width: 5;
+    cursor:       pointer;
+    transition:   stroke-width var(--ab-transition), opacity var(--ab-transition);
+}
+
+.slice--active { stroke-width: 6.4; }
+.slice--dimmed { opacity: 0.35; }
+
+/* Mismos tonos que las etiquetas de estado (color del texto de cada pill). */
+.slice--programada { stroke: #55698c; background: #55698c; }
+.slice--confirmada { stroke: #7d8a5a; background: #7d8a5a; }
+.slice--enprogreso { stroke: #d39a3c; background: #d39a3c; }
+.slice--completada { stroke: #4e9a66; background: #4e9a66; }
+.slice--noasistio  { stroke: var(--ab-danger); background: var(--ab-danger); }
+.slice--cancelada  { stroke: #b5b09c; background: #b5b09c; }
+
+.donut-center {
+    position:        absolute;
+    inset:           0;
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    pointer-events:  none;
+    text-align:      center;
+}
+
+.donut-center__value {
+    font-family: var(--ab-serif);
+    font-size:   2.4rem;
+    font-weight: 600;
+    line-height: 1;
+    color:       var(--ab-sage-deep);
+}
+
+.donut-center__label {
+    margin-top: 0.2rem;
+    font-size:  0.78rem;
+    font-weight: 600;
+    color:      var(--ab-muted);
+}
+
+.donut-center__percent {
+    font-size:   0.78rem;
+    font-weight: 700;
+    color:       var(--ab-sage-dark);
+    min-height:  1em;
+}
+
+/* ── Leyenda ────────────────────────────────────────────────────────────── */
+.legend {
+    flex:                  1;
+    list-style:            none;
+    margin:                0;
+    padding:               0;
+    display:               grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:                   0.45rem 1rem;
+}
+
+.legend-item {
+    width:         100%;
+    display:       flex;
+    align-items:   center;
+    gap:           0.6rem;
+    padding:       0.55rem 0.75rem;
+    border:        1px solid var(--ab-line);
+    border-radius: var(--ab-radius-sm);
+    background:    var(--ab-surface);
+    font-family:   var(--ab-sans);
+    text-align:    left;
+    cursor:        pointer;
+    transition:    background var(--ab-transition), border-color var(--ab-transition);
+}
+
+.legend-item:hover,
+.legend-item--active   { background: var(--ab-sage-mist); }
+.legend-item--selected { border-color: var(--ab-sage); box-shadow: 0 0 0 1px var(--ab-sage) inset; }
+.legend-item--empty    { opacity: 0.55; }
+.legend-item:focus-visible { outline: 2px solid var(--ab-gold); outline-offset: 1px; }
+
+.swatch {
+    flex-shrink:   0;
+    width:         12px;
+    height:        12px;
+    border-radius: 50%;
+}
+
+.legend-label {
+    flex:        1;
+    min-width:   0;
+    font-size:   0.85rem;
+    font-weight: 600;
+    color:       var(--ab-ink);
+}
+
+.legend-count {
+    font-family: var(--ab-serif);
+    font-size:   1.1rem;
+    font-weight: 600;
+    color:       var(--ab-sage-deep);
+}
+
+.legend-percent {
+    width:      2.6rem;
+    text-align: right;
+    font-size:  0.75rem;
+    color:      var(--ab-muted);
+}
+
+.chart-empty {
+    margin:     0.75rem 0 0;
+    text-align: center;
+    font-size:  0.8rem;
+    color:      var(--ab-muted);
+}
+
+@media (max-width: 760px) {
+    .chart-body { flex-direction: column; gap: 1.25rem; }
+    .legend     { width: 100%; }
+}
+
+@media (max-width: 420px) {
+    .legend { grid-template-columns: 1fr; }
+}

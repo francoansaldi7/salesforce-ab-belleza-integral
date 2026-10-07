@@ -76,6 +76,34 @@
     color:          var(--ab-ink);
 }
 
+/* Balance mensual: la tarjeta y el botón de gráfico son botones hermanos (no se anidan botones). */
+.kpi-tile-wrap {
+    position: relative;
+    display:  flex;
+}
+
+.kpi-tile-wrap > .kpi-tile { flex: 1; min-width: 0; }
+
+.kpi-chart-btn {
+    position:        absolute;
+    top:             1.1rem;
+    right:           1.1rem;
+    width:           32px;
+    height:          32px;
+    border-radius:   50%;
+    border:          1px solid var(--ab-line);
+    background:      var(--ab-surface);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    cursor:          pointer;
+    transition:      background var(--ab-transition), border-color var(--ab-transition), transform var(--ab-transition);
+    --slds-c-icon-color-foreground-default: var(--ab-sage-dark);
+}
+
+.kpi-chart-btn:hover         { background: var(--ab-sage-mist); border-color: var(--ab-sage); transform: scale(1.06); }
+.kpi-chart-btn:focus-visible { outline: 2px solid var(--ab-gold); outline-offset: 2px; }
+
 .kpi-tile--clickable {
     cursor:     pointer;
     transition: transform var(--ab-transition), border-color var(--ab-transition), box-shadow var(--ab-transition);
@@ -208,6 +236,27 @@
 }
 
 .view-btn--active { background: var(--ab-sage-dark); color: #fffdf6; }
+
+/* ── Balance: gráfico / movimientos ─────────────────────────────────────── */
+.balance-view-toggle {
+    display:       flex;
+    width:         fit-content;
+    margin:        0 auto 1.1rem;
+    padding:       3px;
+    border-radius: var(--ab-radius-sm);
+    background:    var(--ab-sage-mist);
+    border:        1px solid var(--ab-line);
+}
+
+.balance-view-toggle .view-btn {
+    display:     inline-flex;
+    align-items: center;
+    gap:         0.4rem;
+    padding:     0.4rem 1.1rem;
+}
+
+.toggle-icon                     { --slds-c-icon-color-foreground-default: currentColor; }
+.view-btn--active .toggle-icon   { --slds-c-icon-color-foreground-default: #fffdf6; }
 
 .appointment-list {
     list-style: none;

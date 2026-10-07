@@ -82,6 +82,14 @@ public with sharing class SalonController {
         @AuraEnabled public Decimal                    expenses     { get; set; }
         @AuraEnabled public Decimal                    balance      { get; set; }
         @AuraEnabled public List<Salon_Transaction__c> transactions { get; set; }
+        // Totales por tipo y categoría de todo el mes (para el gráfico), no solo de los 200 visibles.
+        @AuraEnabled public List<CategoryTotal>        categories   { get; set; }
+    }
+
+    public class CategoryTotal {
+        @AuraEnabled public String  type     { get; set; }
+        @AuraEnabled public String  category { get; set; }
+        @AuraEnabled public Decimal total    { get; set; }
     }
 
     @AuraEnabled
@@ -94,20 +102,30 @@ public with sharing class SalonController {
         Date endDate   = startDate.addMonths(1).addDays(-1);
 
         MonthlyBalanceDetail detail = new MonthlyBalanceDetail();
-        detail.income   = 0;
-        detail.expenses = 0;
+        detail.income     = 0;
+        detail.expenses   = 0;
+        detail.categories = new List<CategoryTotal>();
         for (AggregateResult ar : [
-            SELECT Transaction_Type__c txType, SUM(Amount__c) total
+            SELECT Transaction_Type__c txType, Category__c category, SUM(Amount__c) total
             FROM Salon_Transaction__c
             WHERE Transaction_Date__c >= :startDate
               AND Transaction_Date__c <= :endDate
             WITH SECURITY_ENFORCED
-            GROUP BY Transaction_Type__c
+            GROUP BY Transaction_Type__c, Category__c
+            ORDER BY SUM(Amount__c) DESC
         ]) {
             Decimal total = (Decimal) ar.get('total');
             if (total == null) continue;
-            if ((String) ar.get('txType') == 'Ingreso')    detail.income   += total;
-            else if ((String) ar.get('txType') == 'Gasto') detail.expenses += total;
+            String txType = (String) ar.get('txType');
+            if (txType == 'Ingreso')    detail.income   += total;
+            else if (txType == 'Gasto') detail.expenses += total;
+            else continue;
+
+            CategoryTotal categoryTotal = new CategoryTotal();
+            categoryTotal.type     = txType;
+            categoryTotal.category = String.isBlank((String) ar.get('category')) ? 'Sin categoría' : (String) ar.get('category');
+            categoryTotal.total    = total;
+            detail.categories.add(categoryTotal);
         }
         detail.balance = detail.income - detail.expenses;
 

@@ -39,6 +39,7 @@ export default class SalonHome extends NavigationMixin(LightningElement) {
     selectedMonth      = new Date().getMonth() + 1; // 1-based
     @track balanceDetail = null;  // MonthlyBalanceDetail from Apex — @track needed for nested object mutation
     isLoadingBalance   = false;
+    balanceView        = 'list'; // 'list' | 'chart'
 
     // Modales detalle — shown when the user clicks a KPI tile
     @track showLowStockModal  = false;
@@ -192,6 +193,16 @@ export default class SalonHome extends NavigationMixin(LightningElement) {
     get balanceNet()      { return this.formatCurrency(this.balanceDetail ? this.balanceDetail.balance : 0); }
     get balanceNetClass() { return this.balanceDetail && this.balanceDetail.balance < 0 ? 'balance-card__value balance-card__value--negative' : 'balance-card__value'; }
 
+    get isBalanceChartView()   { return this.balanceView === 'chart'; }
+    get isBalanceListView()    { return this.balanceView === 'list'; }
+    get balanceChartPressed()  { return String(this.isBalanceChartView); }
+    get balanceListPressed()   { return String(this.isBalanceListView); }
+    get chartIncome()          { return this.balanceDetail ? this.balanceDetail.income : 0; }
+    get chartExpenses()        { return this.balanceDetail ? this.balanceDetail.expenses : 0; }
+    get chartCategories()      { return this.balanceDetail?.categories || []; }
+    get balanceChartBtnClass() { return 'view-btn' + (this.isBalanceChartView ? ' view-btn--active' : ''); }
+    get balanceListBtnClass()  { return 'view-btn' + (this.isBalanceListView ? ' view-btn--active' : ''); }
+
     get balanceTransactions() { return this.balanceDetail ? this.balanceDetail.transactions : []; }
     get hasBalanceTransactions() { return this.balanceTransactions.length > 0; }
 
@@ -308,7 +319,21 @@ export default class SalonHome extends NavigationMixin(LightningElement) {
 
     // ── Modal de Balance Histórico ────────────────────────────────────────────
 
+    // La tarjeta abre la lista de movimientos; el ícono de gráfico abre directamente el gráfico.
     handleBalanceTileClick() {
+        this._openBalanceModal('list');
+    }
+
+    handleBalanceChartClick() {
+        this._openBalanceModal('chart');
+    }
+
+    handleBalanceViewToggle(event) {
+        this.balanceView = event.currentTarget.dataset.view;
+    }
+
+    _openBalanceModal(view) {
+        this.balanceView      = view;
         this.showBalanceModal = true;
         this._loadBalanceDetail();
     }
