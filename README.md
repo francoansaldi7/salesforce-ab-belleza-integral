@@ -106,19 +106,22 @@ scripts/apex/seed-sample-data.apex   # Optional fictional demo data
 
 ## Deployment
 
-Requires the [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli).
+New to Salesforce deployments? Follow the **[step-by-step installation guide (PDF)](docs/Installation-Guide.pdf)**. It walks through everything from installing the CLI to opening the app in a free Trailhead Playground, with screenshots and a troubleshooting section.
+
+Quick version, using the [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli):
 
 ```bash
 # 1. Authorize a target org (use a Developer Edition or sandbox for trying it out)
 sf org login web --alias salonOrg
 
 # 2. Deploy
-sf project deploy start --target-org salonOrg
+sf project deploy start --source-dir force-app --target-org salonOrg
 
 # 3. Grant access
 sf org assign permset --name AB_Belleza_Integral --target-org salonOrg
 
-# 4. (Optional) Load fictional demo data: 12 clients, ~100 appointments, sales and expenses
+# 4. (Optional) Load fictional demo data: 12 clients, ~100 appointments, sales and expenses.
+#    Runs only in an org with no clients yet; otherwise it stops without changing anything.
 sf apex run --file scripts/apex/seed-sample-data.apex --target-org salonOrg
 ```
 
