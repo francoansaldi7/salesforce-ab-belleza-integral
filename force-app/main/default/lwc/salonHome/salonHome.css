@@ -153,7 +153,8 @@
     border:        1px solid var(--ab-line);
     border-radius: var(--ab-radius);
     box-shadow:    var(--ab-shadow);
-    overflow:      hidden;
+    /* Sin overflow: hidden, para que el menú de estado pueda desplegarse fuera del panel
+       (con una sola cita quedaba recortado). Las esquinas se redondean en el encabezado y la última fila. */
 }
 
 .panel-header {
@@ -162,6 +163,7 @@
     gap:           0.6rem;
     padding:       0.95rem 1.25rem;
     border-bottom: 1px solid var(--ab-line);
+    border-radius: var(--ab-radius) var(--ab-radius) 0 0;
     background:    var(--ab-sage-mist);
 }
 
@@ -224,7 +226,10 @@
 }
 
 .appointment-item:hover      { background: var(--ab-sage-mist); }
-.appointment-item:last-child { border-bottom: none; }
+.appointment-item:last-child { border-bottom: none; border-radius: 0 0 var(--ab-radius) var(--ab-radius); }
+
+/* Con el menú abierto, la fila queda por encima de las siguientes para que el desplegable no se tape. */
+.appointment-item:focus-within { position: relative; z-index: 2; }
 
 .appt-time {
     flex-shrink:    0;
