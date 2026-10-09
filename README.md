@@ -8,6 +8,41 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 
 > **Privacy:** this repository contains only code and metadata. No client data, no business records and no org-specific identifiers. The optional sample-data script creates **fictional** clients and records for demos.
 
+## Screenshots
+
+All screenshots use **fictional sample data** in a separate demo org.
+
+**Dashboard**: the month's balance, open appointments, low-stock products and inactive clients, the quick actions, and today's appointments:
+
+![Dashboard](screenshots/dashboard.png)
+
+**Appointment actions**: change an appointment's status in one click, or delete it (with confirmation):
+
+![Status menu open on an appointment](screenshots/status-menu.png)
+
+**Appointment history**: every appointment, filtered by status, period or client, with a summary of the current filter:
+
+![Historial tab with filters and summary](screenshots/historial.png)
+
+**Status chart**: under the list, the status split for the same filters, in the colors of the status pills. Clicking a legend entry filters the list:
+
+![Donut chart of appointments by status](screenshots/status-chart.png)
+
+**Client file**: one-tap contact buttons, the health section ("Ficha de salud"), visit stats, preferred services and recent appointments:
+
+![Client file](screenshots/client-file.png)
+
+<table>
+<tr>
+<td width="50%"><strong>Income vs. expenses</strong>: the month's totals as bars, split by category, with a one-line summary of the profit<br><br><img src="screenshots/balance-chart.png" alt="Income vs. expenses chart for the month"></td>
+<td width="50%"><strong>Transactions</strong>: the same window's list view, with a month and year picker<br><br><img src="screenshots/balance-movements.png" alt="Monthly balance with the list of transactions"></td>
+</tr>
+</table>
+
+**Double-booking check**: if the time slot is taken, the booking wizard stays on the same step and names the existing appointment:
+
+![Booking wizard showing the double-booking message](screenshots/double-booking.png)
+
 ## Features
 
 ### Design
