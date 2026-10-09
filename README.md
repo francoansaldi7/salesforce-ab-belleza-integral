@@ -8,6 +8,12 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 
 > **Privacy:** this repository contains only code and metadata. No client data, no business records and no org-specific identifiers. The optional sample-data script creates **fictional** clients and records for demos.
 
+## Demo
+
+A one-minute tour with fictional data: booking an appointment, deleting one from the status menu, the appointment history and its status chart, the monthly balance and its chart, and a client file.
+
+![App demo](screenshots/demo.gif)
+
 ## Screenshots
 
 All screenshots use **fictional sample data** in a separate demo org.
