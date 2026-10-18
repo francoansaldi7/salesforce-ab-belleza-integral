@@ -630,4 +630,70 @@ private class SalonControllerTest {
 
         Assert.isNull(result, 'Un PDF adjunto no debe usarse como imagen del producto');
     }
+
+    // ─── Calendario ──────────────────────────────────────────────────────────
+
+    /** Appointments in a fixed future month, so they don't mix with the @TestSetup data. */
+    private static Date insertCalendarAppointments() {
+        Date firstDay = Date.today().toStartOfMonth().addMonths(3);
+        Id clientId = [SELECT Id FROM Salon_Client__c WHERE Full_Name__c = 'María García' LIMIT 1].Id;
+        insert new List<Salon_Appointment__c>{
+            new Salon_Appointment__c(Client__c = clientId, Status__c = 'Programada', Total_Amount__c = 100, Payment_Method__c = 'Efectivo',
+                Appointment_Date__c = Datetime.newInstance(firstDay.addDays(4), Time.newInstance(10, 0, 0, 0))),
+            new Salon_Appointment__c(Client__c = clientId, Status__c = 'Confirmada', Total_Amount__c = 100, Payment_Method__c = 'Efectivo',
+                Appointment_Date__c = Datetime.newInstance(firstDay.addDays(4), Time.newInstance(23, 30, 0, 0))),
+            new Salon_Appointment__c(Client__c = clientId, Status__c = 'Cancelada', Total_Amount__c = 100, Payment_Method__c = 'Efectivo',
+                Appointment_Date__c = Datetime.newInstance(firstDay.addDays(9), Time.newInstance(11, 0, 0, 0)))
+        };
+        return firstDay;
+    }
+
+    @IsTest
+    static void testGetAppointmentDaysInMonth_countsDaysAndSkipsCancelled() {
+        Date firstDay = insertCalendarAppointments();
+
+        Test.startTest();
+        Map<String, Integer> days = SalonController.getAppointmentDaysInMonth(firstDay.year(), firstDay.month());
+        Test.stopTest();
+
+        Assert.areEqual(1, days.size(), 'Only the 5th has active appointments; the 10th only has a cancelled one');
+        Assert.areEqual(2, days.get('5'), 'The 23:30 appointment stays on its own day in the user\'s timezone');
+    }
+
+    @IsTest
+    static void testGetAppointmentDaysInMonth_invalidMonth_throws() {
+        try {
+            SalonController.getAppointmentDaysInMonth(2026, 13);
+            Assert.fail('Month 13 should be rejected');
+        } catch (AuraHandledException e) {
+            Assert.areEqual('Año y mes requeridos y válidos.', e.getMessage());
+        }
+    }
+
+    @IsTest
+    static void testGetAppointmentsForDay_listsTheDayInOrderIncludingCancelled() {
+        Date firstDay = insertCalendarAppointments();
+
+        Test.startTest();
+        List<Salon_Appointment__c> fifth = SalonController.getAppointmentsForDay(firstDay.addDays(4));
+        List<Salon_Appointment__c> tenth = SalonController.getAppointmentsForDay(firstDay.addDays(9));
+        List<Salon_Appointment__c> empty = SalonController.getAppointmentsForDay(firstDay.addDays(1));
+        Test.stopTest();
+
+        Assert.areEqual(2, fifth.size(), 'Both appointments of the 5th');
+        Assert.areEqual('Programada', fifth[0].Status__c, 'Ordered by time: 10:00 first');
+        Assert.areEqual('María García', fifth[0].Client__r.Full_Name__c, 'Includes the client name');
+        Assert.areEqual(1, tenth.size(), 'Cancelled appointments still appear in the day list');
+        Assert.isTrue(empty.isEmpty(), 'A day without appointments returns an empty list');
+    }
+
+    @IsTest
+    static void testGetAppointmentsForDay_missingDay_throws() {
+        try {
+            SalonController.getAppointmentsForDay(null);
+            Assert.fail('A missing day should be rejected');
+        } catch (AuraHandledException e) {
+            Assert.areEqual('Falta indicar el día.', e.getMessage());
+        }
+    }
 }

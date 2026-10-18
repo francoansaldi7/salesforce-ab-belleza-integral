@@ -98,6 +98,10 @@
                     <button class={todayBtnClass} onclick={handleViewToggle} data-view="today">Hoy</button>
                     <button class={pendingBtnClass} onclick={handleViewToggle} data-view="pending">Próximas</button>
                 </div>
+                <button class="calendar-btn" onclick={handleCalendarClick} title="Ver el calendario de citas"
+                    aria-label="Ver el calendario de citas">
+                    <lightning-icon icon-name="utility:monthlyview" size="x-small"></lightning-icon>
+                </button>
             </div>
 
             <template lwc:if={isLoadingAppointments}>
@@ -159,6 +163,9 @@
 
         <!-- Editar cita -->
         <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleEditSuccess} ondeleted={handleAppointmentDeleted}></c-salon-appointment-edit-modal>
+
+        <!-- Calendario de citas -->
+        <c-salon-calendar lwc:ref="calendar" onappointmentchange={handleCalendarChange}></c-salon-calendar>
 
         <!-- Bajo stock -->
         <template lwc:if={showLowStockModal}>

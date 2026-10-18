@@ -1,0 +1,235 @@
+@import 'c/salonStyles';
+
+/* ── Ventana del calendario ─────────────────────────────────────────────── */
+.calendar-modal { max-width: 440px; }
+
+.calendar-body { padding: 1rem 1.25rem 1.1rem; }
+
+.month-nav {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    margin-bottom:   0.75rem;
+}
+
+.month-label {
+    font-family: var(--ab-serif);
+    font-size:   1.45rem;
+    font-weight: 600;
+    color:       var(--ab-sage-deep);
+}
+
+.nav-btn {
+    width:         36px;
+    height:        36px;
+    border-radius: 50%;
+    border:        1px solid var(--ab-line);
+    background:    var(--ab-surface);
+    color:         var(--ab-sage-dark);
+    font-size:     1.4rem;
+    line-height:   1;
+    cursor:        pointer;
+    transition:    background var(--ab-transition), border-color var(--ab-transition);
+}
+
+.nav-btn:hover         { background: var(--ab-sage-mist); border-color: var(--ab-sage); }
+.nav-btn:focus-visible { outline: 2px solid var(--ab-gold); outline-offset: 2px; }
+
+.grid-wrap { position: relative; }
+
+.month-grid {
+    width:           100%;
+    border-collapse: separate;
+    border-spacing:  4px;
+    table-layout:    fixed;
+}
+
+.month-grid th {
+    padding:        0.2rem 0;
+    font-size:      0.68rem;
+    font-weight:    700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align:     center;
+    color:          var(--ab-muted);
+}
+
+.month-grid td { padding: 0; text-align: center; }
+
+/* Días: negro sin citas, rojo con citas. */
+.day {
+    width:         100%;
+    aspect-ratio:  1;
+    max-height:    48px;
+    border:        1px solid transparent;
+    border-radius: 10px;
+    background:    transparent;
+    font-family:   var(--ab-sans);
+    font-size:     0.95rem;
+    font-weight:   500;
+    color:         var(--ab-ink);
+    cursor:        pointer;
+    transition:    background var(--ab-transition), border-color var(--ab-transition);
+}
+
+.day:hover         { background: var(--ab-sage-mist); }
+.day:focus-visible { outline: 2px solid var(--ab-gold); outline-offset: 1px; }
+
+.day--busy {
+    color:       var(--ab-danger);
+    font-weight: 800;
+    background:  var(--ab-danger-light);
+}
+
+.day--busy:hover { background: #f3d9d0; }
+.day--today      { border-color: var(--ab-sage); box-shadow: 0 0 0 1px var(--ab-sage) inset; }
+.day--selected   { border-color: var(--ab-sage-deep); }
+
+.calendar-foot {
+    display:         flex;
+    justify-content: space-between;
+    align-items:     center;
+    margin-top:      0.75rem;
+    font-size:       0.78rem;
+    color:           var(--ab-muted);
+}
+
+.legend { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+.legend-dot {
+    width:         10px;
+    height:        10px;
+    border-radius: 3px;
+    background:    var(--ab-danger-light);
+    border:        1px solid var(--ab-danger);
+}
+
+.link-btn {
+    background:  none;
+    border:      none;
+    padding:     0.2rem 0.3rem;
+    font-size:   0.78rem;
+    font-weight: 700;
+    color:       var(--ab-sage-dark);
+    cursor:      pointer;
+}
+
+.link-btn:hover { text-decoration: underline; color: var(--ab-sage-deep); }
+
+.calendar-error {
+    margin:    0.6rem 0 0;
+    font-size: 0.8rem;
+    color:     var(--ab-danger);
+}
+
+/* ── Ventana del día ────────────────────────────────────────────────────── */
+.day-overlay { background: rgba(46, 44, 37, 0.25); }
+
+.day-modal { max-width: 480px; }
+
+.back-btn {
+    flex:        1;
+    background:  none;
+    border:      none;
+    padding:     0.2rem 0;
+    text-align:  left;
+    font-size:   0.85rem;
+    font-weight: 700;
+    color:       var(--ab-sage-dark);
+    cursor:      pointer;
+}
+
+.back-btn:hover { color: var(--ab-sage-deep); text-decoration: underline; }
+
+.day-body { padding: 1rem 1.25rem 1.25rem; overflow-y: auto; }
+
+.day-title {
+    margin:      0 0 0.2rem;
+    font-family: var(--ab-serif);
+    font-size:   1.4rem;
+    font-weight: 600;
+    color:       var(--ab-sage-deep);
+}
+
+.day-hint {
+    margin:    0 0 0.6rem;
+    font-size: 0.76rem;
+    color:     var(--ab-muted);
+}
+
+.day-list {
+    list-style: none;
+    margin:     0;
+    padding:    0;
+    border:     1px solid var(--ab-line);
+    border-radius: var(--ab-radius-sm);
+    overflow:   hidden;
+}
+
+.day-row {
+    display:       flex;
+    align-items:   center;
+    gap:           0.75rem;
+    padding:       0.7rem 0.85rem;
+    border-bottom: 1px solid var(--ab-line);
+    cursor:        pointer;
+    transition:    background var(--ab-transition);
+}
+
+.day-row:last-child     { border-bottom: none; }
+.day-row:hover          { background: var(--ab-sage-mist); }
+.day-row:focus-visible  { outline: 2px solid var(--ab-gold); outline-offset: -2px; }
+.day-row--cancelled     { opacity: 0.6; }
+
+.day-row__time {
+    flex-shrink:   0;
+    padding:       0.3rem 0.5rem;
+    border-radius: 8px;
+    background:    var(--ab-cream);
+    font-size:     0.78rem;
+    font-weight:   700;
+    color:         var(--ab-sage-deep);
+}
+
+.day-row__main { flex: 1; min-width: 0; }
+
+.day-row__client {
+    display:     flex;
+    align-items: center;
+    gap:         0.4rem;
+    flex-wrap:   wrap;
+    font-size:   0.9rem;
+    font-weight: 700;
+    color:       var(--ab-ink);
+}
+
+.day-row__services {
+    display:    flex;
+    flex-wrap:  wrap;
+    gap:        0.3rem;
+    margin-top: 0.3rem;
+}
+
+.day-row__side {
+    display:        flex;
+    flex-direction: column;
+    align-items:    flex-end;
+    gap:            0.3rem;
+    flex-shrink:    0;
+}
+
+.day-row__amount {
+    font-size:   0.82rem;
+    font-weight: 700;
+    color:       var(--ab-sage-deep);
+}
+
+.day-empty { padding: 1.5rem 0.5rem; }
+
+/* En el celular la lista del día ocupa el lugar del calendario en vez de apilarse encima. */
+@media (max-width: 560px) {
+    .calendar-overlay--behind { display: none; }
+    .day-overlay              { background: rgba(46, 44, 37, 0.45); }
+    .day-row                  { flex-wrap: wrap; }
+    .day-row__side            { flex-direction: row; align-items: center; width: 100%; justify-content: flex-end; }
+}

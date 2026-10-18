@@ -1,0 +1,115 @@
+<template>
+    <template lwc:if={isOpen}>
+        <!-- Calendario del mes -->
+        <div class={calendarOverlayClass} onkeydown={handleCalendarKeyDown}>
+            <section class="ab-modal calendar-modal" role="dialog" aria-modal="true" aria-label="Calendario de citas">
+                <div class="ab-modal__header">
+                    <h2 class="ab-modal__title">Calendario de citas</h2>
+                    <button class="ab-modal__close calendar-close" onclick={handleClose} aria-label="Cerrar">&#215;</button>
+                </div>
+                <div class="ab-modal__body calendar-body">
+                    <div class="month-nav">
+                        <button class="nav-btn prev-month" onclick={handlePreviousMonth} aria-label="Mes anterior">&#8249;</button>
+                        <div class="month-label" aria-live="polite">{monthLabel}</div>
+                        <button class="nav-btn next-month" onclick={handleNextMonth} aria-label="Mes siguiente">&#8250;</button>
+                    </div>
+
+                    <div class="grid-wrap">
+                        <template lwc:if={isLoadingMonth}>
+                            <div class="ab-loading-overlay"><div class="ab-loader" role="status" aria-label="Cargando"></div></div>
+                        </template>
+                        <table class="month-grid" role="grid">
+                            <thead>
+                                <tr>
+                                    <template for:each={weekdays} for:item="weekday">
+                                        <th key={weekday} scope="col">{weekday}</th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={weeks} for:item="week">
+                                    <tr key={week.key}>
+                                        <template for:each={week.days} for:item="cell">
+                                            <td key={cell.key}>
+                                                <template lwc:if={cell.day}>
+                                                    <button class={cell.className} data-day={cell.day} onclick={handleDayClick}
+                                                        aria-label={cell.ariaLabel} title={cell.title}>{cell.day}</button>
+                                                </template>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <template lwc:if={monthError}>
+                        <p class="calendar-error">{monthError}</p>
+                    </template>
+
+                    <div class="calendar-foot">
+                        <span class="legend"><span class="legend-dot"></span>{monthSummary}</span>
+                        <template lwc:if={showBackToToday}>
+                            <button class="link-btn this-month" onclick={handleThisMonth}>Volver a hoy</button>
+                        </template>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Citas del día elegido -->
+        <template lwc:if={hasSelectedDay}>
+            <div class="ab-modal-overlay day-overlay" onkeydown={handleDayKeyDown}>
+                <section class="ab-modal day-modal" role="dialog" aria-modal="true" aria-label={dayTitle}>
+                    <div class="ab-modal__header">
+                        <button class="back-btn" onclick={handleBackToCalendar}>&#8249; Volver al calendario</button>
+                        <button class="ab-modal__close day-close" onclick={handleBackToCalendar} aria-label="Cerrar">&#215;</button>
+                    </div>
+                    <div class="ab-modal__body day-body">
+                        <h3 class="day-title">{dayTitle}</h3>
+
+                        <template lwc:if={isLoadingDay}>
+                            <div class="ab-loader-wrap"><div class="ab-loader" role="status" aria-label="Cargando citas"></div></div>
+                        </template>
+                        <template lwc:elseif={dayError}>
+                            <p class="calendar-error">{dayError}</p>
+                        </template>
+                        <template lwc:elseif={hasDayRows}>
+                            <p class="day-hint">Tocá una cita para verla, editarla o eliminarla.</p>
+                            <ul class="day-list">
+                                <template for:each={dayRows} for:item="row">
+                                    <li key={row.id} class={row.rowClass} data-id={row.id} tabindex="0" role="button"
+                                        onclick={handleAppointmentClick} onkeydown={handleAppointmentKeyDown} title="Ver o editar la cita">
+                                        <span class="day-row__time">{row.time}</span>
+                                        <div class="day-row__main">
+                                            <div class="day-row__client">
+                                                {row.clientName}
+                                                <template lwc:if={row.isVip}><span class="badge badge-vip">VIP</span></template>
+                                                <template lwc:if={row.allergy}><span class="badge badge-allergy" title={row.allergy}>ALERGIA</span></template>
+                                            </div>
+                                            <div class="day-row__services">
+                                                <template for:each={row.services} for:item="service">
+                                                    <span key={service} class="service-tag">{service}</span>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        <div class="day-row__side">
+                                            <span class={row.statusClass}>{row.status}</span>
+                                            <span class="day-row__amount">{row.amount}</span>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                        <template lwc:if={showDayEmpty}>
+                            <div class="ab-empty day-empty">No hay citas para este día.</div>
+                        </template>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+        <c-salon-appointment-edit-modal lwc:ref="editModal" onsaved={handleAppointmentChanged}
+            ondeleted={handleAppointmentChanged}></c-salon-appointment-edit-modal>
+    </template>
+</template>

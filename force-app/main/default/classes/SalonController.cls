@@ -424,6 +424,58 @@ public with sharing class SalonController {
         return result;
     }
 
+    // ─── Calendario de citas ─────────────────────────────────────────────────
+
+    /**
+     * Días del mes con al menos una cita no cancelada: { "14": 3, "21": 1 } (día → cantidad).
+     * Los límites del mes y el día de cada cita se calculan en la zona horaria del usuario,
+     * así una cita a las 23:30 no aparece en el día siguiente.
+     */
+    @AuraEnabled
+    public static Map<String, Integer> getAppointmentDaysInMonth(Integer year, Integer month) {
+        if (year == null || month == null || month < 1 || month > 12 || year < 2000 || year > 2100) {
+            throw auraError('Año y mes requeridos y válidos.');
+        }
+        Date firstDay = Date.newInstance(year, month, 1);
+        Datetime monthStart = Datetime.newInstance(firstDay, Time.newInstance(0, 0, 0, 0));
+        Datetime nextMonthStart = Datetime.newInstance(firstDay.addMonths(1), Time.newInstance(0, 0, 0, 0));
+
+        Map<String, Integer> countByDay = new Map<String, Integer>();
+        for (AggregateResult ar : [
+            SELECT DAY_IN_MONTH(convertTimezone(Appointment_Date__c)) day, COUNT(Id) total
+            FROM Salon_Appointment__c
+            WHERE Appointment_Date__c >= :monthStart
+              AND Appointment_Date__c < :nextMonthStart
+              AND Status__c != 'Cancelada'
+            WITH SECURITY_ENFORCED
+            GROUP BY DAY_IN_MONTH(convertTimezone(Appointment_Date__c))
+        ]) {
+            countByDay.put(String.valueOf(ar.get('day')), (Integer) ar.get('total'));
+        }
+        return countByDay;
+    }
+
+    /** Todas las citas de un día (incluidas las canceladas), en orden horario. */
+    @AuraEnabled
+    public static List<Salon_Appointment__c> getAppointmentsForDay(Date day) {
+        if (day == null) {
+            throw auraError('Falta indicar el día.');
+        }
+        Datetime dayStart = Datetime.newInstance(day, Time.newInstance(0, 0, 0, 0));
+        Datetime nextDayStart = Datetime.newInstance(day.addDays(1), Time.newInstance(0, 0, 0, 0));
+        return [
+            SELECT Id, Name, Appointment_Date__c, Status__c, Services__c, Total_Amount__c, Amount_Paid__c,
+                   Payment_Method__c, Client__c, Client__r.Full_Name__c, Client__r.VIP_Client__c,
+                   Client__r.Allergies_Notes__c
+            FROM Salon_Appointment__c
+            WHERE Appointment_Date__c >= :dayStart
+              AND Appointment_Date__c < :nextDayStart
+            WITH SECURITY_ENFORCED
+            ORDER BY Appointment_Date__c ASC
+            LIMIT 200
+        ];
+    }
+
     // AuraHandledException solo expone el texto a getMessage() si además se llama a setMessage().
     private static AuraHandledException auraError(String message) {
         AuraHandledException error = new AuraHandledException(message);

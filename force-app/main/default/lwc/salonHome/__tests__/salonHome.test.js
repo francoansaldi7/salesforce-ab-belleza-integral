@@ -189,6 +189,26 @@ describe('c-salon-home', () => {
         expect($(element, '.ab-modal--balance')).toBeNull();
     });
 
+    it('el ícono de calendario abre el calendario de citas', async () => {
+        const element = await render();
+        const calendar = $(element, 'c-salon-calendar');
+        calendar.open = jest.fn();
+
+        $(element, '.calendar-btn').click();
+
+        expect(calendar.open).toHaveBeenCalledTimes(1);
+    });
+
+    it('si se edita o elimina una cita desde el calendario, recarga el panel', async () => {
+        const element = await render();
+
+        $(element, 'c-salon-calendar').dispatchEvent(new CustomEvent('appointmentchange'));
+        await flushPromises();
+
+        expect(getTodayAppointments).toHaveBeenCalledTimes(2);
+        expect(getOpenAppointmentsCount).toHaveBeenCalledTimes(2);
+    });
+
     it('carga los productos con bajo stock al abrir su detalle', async () => {
         getLowStockProducts.mockResolvedValue([
             { Id: 'p1', Name: 'Tinte Ejemplo', Category__c: 'Cabello', Stock_Quantity__c: 1, Low_Stock_Alert__c: 4 }

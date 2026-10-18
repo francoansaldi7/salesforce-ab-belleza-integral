@@ -228,6 +228,15 @@ export default class SalonHome extends NavigationMixin(LightningElement) {
         this.loadData();
     }
 
+    handleCalendarClick() {
+        this.refs.calendar.open();
+    }
+
+    // Una cita editada o eliminada desde el calendario: se actualizan las listas y los indicadores.
+    handleCalendarChange() {
+        this.loadData();
+    }
+
     // "Ana Pérez · mié 14/10 · 15:00": identifies the appointment in the delete confirmation.
     _appointmentLabel(id) {
         const appt = [...this.todayAppointments, ...this.pendingAppointments].find(a => a.Id === id);

@@ -57,6 +57,7 @@ A custom visual identity taken from the salon's logo: **sage and cream**, warm c
 ### Dashboard (`salonHome`)
 - **Today's appointments** and **upcoming appointments**. Each row shows a time chip, the client's initials, **VIP** and **ALERGIA** badges (the allergy note shows on hover), service tags, the amount paid and a status pill.
 - **One-click status changes** (Confirmada, En Progreso, Completada, No Asistió, Cancelada), an **edit window** for any appointment, and **delete with confirmation**. Deleting also removes the appointment's service income from the balance, and the record stays recoverable from the Recycle Bin for 15 days.
+- **Appointment calendar**: a calendar icon next to *Hoy / Próximas* opens the month, with the days that have appointments in red (cancelled ones don't count). Clicking a day lists its appointments in time order; clicking one opens the same edit window, so it can be edited or deleted from there. Days are worked out in the user's timezone, and on a phone the day list replaces the calendar instead of stacking on top.
 - **KPI tiles:**
   - Monthly balance, which opens a **month-by-month history** of income, expenses and transactions. Its chart icon opens the same window on an **income vs. expenses chart**: two bars scaled against each other, each split by category, with hover details and a one-line summary of the month's profit or loss.
   - Open appointments
@@ -110,12 +111,13 @@ force-app/main/default/
 ├── applications/AB_Belleza_Integral.app-meta.xml
 ├── classes/
 │   ├── SalonController.cls          # Dashboard, history, client card and product image queries; status updates
-│   ├── SalonControllerTest.cls      # 32 tests
+│   ├── SalonControllerTest.cls      # 36 tests
 │   └── SalonAutomationTest.cls      # 11 tests covering the record-triggered flows
 ├── flows/                           # 3 guided wizards + 4 record-triggered automations
 ├── lwc/
 │   ├── salonHome/                   # Dashboard
 │   ├── salonHistory/                # Historial tab
+│   ├── salonCalendar/               # Appointment calendar (dashboard)
 │   ├── salonStatusChart/            # Status donut chart (Historial)
 │   ├── salonBalanceChart/           # Income vs. expenses chart (balance window)
 │   ├── salonClientCard/             # Client file (record page)
@@ -174,7 +176,7 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 
 ## Testing
 
-**Apex**: 43 tests, with **96% coverage** of `SalonController`. They cover every controller method and every record-triggered flow:
+**Apex**: 47 tests, with **97% coverage** of `SalonController`. They cover every controller method and every record-triggered flow:
 - one income per appointment: no duplicates, removal on cancel, creation when an appointment is created already completed
 - double-booking prevention, and that a cancelled appointment frees its slot
 - the VIP thresholds
@@ -182,14 +184,16 @@ Then open **AB Belleza Integral** from the App Launcher. The business logo isn't
 - history filters, summary, sorting and paging
 - deleting an appointment together with its service income only
 - product image lookup: latest image attached, non-image files ignored
+- the calendar: days with active appointments per month (cancelled ones excluded, late-evening ones kept on their own day) and each day's appointments in order
 
 ```bash
 sf apex run test --class-names SalonControllerTest --class-names SalonAutomationTest --code-coverage --result-format human --target-org salonOrg
 ```
 
-**LWC (Jest)**: 62 tests, covering every component:
+**LWC (Jest)**: 75 tests, covering every component:
 - **Dashboard:** KPIs, the today and upcoming views, status changes, the wizards, balance history and its chart view, and the stock and inactive-client details
 - **Historial:** filters, debounced search, summary, sorting, paging, row and client navigation, arriving pre-filtered from a client file, and filtering from the status chart
+- **Calendar:** the Monday-first month grid, red days, month navigation, the day list, opening the edit window, refreshing after an edit or delete, and closing with Escape
 - **Charts:** slices and bars sized from the data, legends with counts and percentages, hover details, empty states, and the profit/loss summary
 - **Client file:** contact links, the health section, stats and the history link
 - **Edit window:** editing, plus delete with confirmation, cancel and retry on failure
