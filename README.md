@@ -18,7 +18,7 @@ A one-minute tour with fictional data: booking an appointment, deleting one from
 
 All screenshots use **fictional sample data** in a separate demo org.
 
-**Dashboard**: the month's balance, open appointments, low-stock products and inactive clients, the quick actions, and today's appointments:
+**Dashboard**: the month's balance, open appointments, low-stock products and inactive clients, the quick actions, and today's appointments. The calendar icon next to *Hoy / Próximas* opens the appointment calendar:
 
 ![Dashboard](screenshots/dashboard.png)
 
