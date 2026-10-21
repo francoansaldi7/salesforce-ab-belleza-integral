@@ -10,7 +10,7 @@ The app is used day to day by a salon in Argentina, so **its interface is in Spa
 
 ## Demo
 
-A one-minute tour with fictional data: booking an appointment, deleting one from the status menu, the appointment history and its status chart, the monthly balance and its chart, and a client file.
+A one-minute tour with fictional data: booking an appointment, logging an expense, selling a product (including the stock check), the appointment calendar, deleting an appointment, the monthly balance and its chart, the appointment history and its status chart, and the low-stock and inactive-client details.
 
 ![App demo](screenshots/demo.gif)
 
